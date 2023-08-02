@@ -9,20 +9,26 @@ const Administradores = sequelize.define('Administradores',{
     },
     nombre:{
         type:DataType.STRING,
+        allowNull:false
     },
     apellido:{
-        type:DataType.STRING
+        type:DataType.STRING,
+        allowNull:false
     },
     usuario:{
-        type:DataType.STRING
+        type:DataType.STRING,
+        allowNull:false
     },
     contraseña:{
-        type:DataType.STRING
+        type:DataType.STRING,
+        allowNull:false
     },
     id_rol:{
-        type:DataType.INTEGER
+        type:DataType.INTEGER,
+        allowNull:false
     }
     
 })
+
 
 export default Administradores;

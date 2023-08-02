@@ -1,6 +1,10 @@
 app Router endpoints /
 ruta => api/v1/
+## MIDLEWARE
 
+Admin ---
+Cliente ---
+Soporte ---
 
 ## AUTH / LOGIN 
 auth/Login 

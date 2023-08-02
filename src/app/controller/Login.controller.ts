@@ -2,16 +2,24 @@ import { Model_Administradores } from "app/Interfaces/LoginInterface";
 import Administradores from "../models/Administradores";
 import { Request, Response } from "express"
 import { Op } from "sequelize";
+import jwt from "jsonwebtoken"
+import 'dotenv/config'
+import Roles from "../models/Roles";
+import bcrypt from "bcrypt"
+
+
 
 export const SignIn =async(req:Request,res:Response)=>{
     try {
         const {usuario,contraseña}= req.body;
         const buscar = await Administradores.findOne({
-            where:{usuario:{[Op.eq]:usuario}}
-        })
+            where:{usuario:{[Op.eq]:usuario}},
+            include:[{model:Roles}]
+        }, )
         if(!buscar){ return res.json({loged:false}) }
         
-        return res.json({loged:true,buscar})
+        const token_user = jwt.sign({buscar},process.env.SECRET_KEY_JWT||'')
+        return res.json({loged:true,token_user})
 
     } catch (error) {
         
@@ -20,11 +28,23 @@ export const SignIn =async(req:Request,res:Response)=>{
 export const CreateUsuario=async (req:Request,res:Response) => {
     try {
         const dat_nuevo:Model_Administradores = req.body
-        const Nuevo= await Administradores.create({...dat_nuevo})
+        const encript_passw = await bcrypt.hash(dat_nuevo.contraseña,9);
+        const Nuevo= await Administradores.create({...dat_nuevo,contraseña:encript_passw})
         if(!Nuevo){
             return res.json({create:false})
         }
         return res.json({create:true,Nuevo})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const GetUsuariosAuth = async(req:Request,res:Response)=>{
+    try {
+        const result = await Administradores.findAll({
+            include:[{model:Roles}]
+        })
+        res.json(result)
     } catch (error) {
         
     }
