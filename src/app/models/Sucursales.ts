@@ -1,4 +1,4 @@
-import { sequelize } from "app/config/database";
+import { sequelize } from "../config/database";
 import { DataType } from "sequelize-typescript";
 import { v4 as uuidv4 } from 'uuid';
 const Sucursal = sequelize.define('Sucursales',{
@@ -13,7 +13,6 @@ const Sucursal = sequelize.define('Sucursales',{
     id_empresa:{
         type:DataType.INTEGER
     },
-    
 })
 
 export default Sucursal;

@@ -12,14 +12,19 @@ import bcrypt from "bcrypt"
 export const SignIn =async(req:Request,res:Response)=>{
     try {
         const {usuario,contraseña}= req.body;
-        const buscar = await Administradores.findOne({
+        const buscar:any = await Administradores.findOne({
             where:{usuario:{[Op.eq]:usuario}},
             include:[{model:Roles}]
         }, )
         if(!buscar){ return res.json({loged:false}) }
-        
+        const user ={
+            nombre:buscar.nombre,
+            apellido:buscar.apellido,
+            usuario:buscar.usuario,
+            rol:buscar.Role.nombre
+        }
         const token_user = jwt.sign({buscar},process.env.SECRET_KEY_JWT||'')
-        return res.json({loged:true,token_user})
+        return res.json({loged:true,token_user,user})
 
     } catch (error) {
         

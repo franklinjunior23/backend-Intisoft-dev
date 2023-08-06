@@ -1,3 +1,4 @@
+import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import { Request, Response } from "express";
 
@@ -8,7 +9,9 @@ import { Request, Response } from "express";
 //empresasss 
 export const GetEmpresas =async(req:Request,res:Response)=>{
     try {
-        const search = await Empresa.findAll();
+        const search = await Empresa.findAll({
+            include:[{model:Sucursal}]
+        });
         res.json(search);
     } catch (error) {
         console.log(error)
@@ -16,6 +19,20 @@ export const GetEmpresas =async(req:Request,res:Response)=>{
     }
 }
 
+export const CreateEmpresa=async (req:Request,res:Response) => {
+    try {
+        const {nombre,lugar}=req.body;
+        if(nombre && lugar){
+            const cret = await Empresa.create({
+                nombre,lugar
+            })
+          return   res.json({create:true,cret})
+        }
+       return res.status(201).json({create:false,msg:"Complete los parametros requeridos"})
+    } catch (error) {
+        res.status(501).json({error:true, msg:"conectese con el administrador EMPCONTROLL"})
+    }
+}
 
 
 
