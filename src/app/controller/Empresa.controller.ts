@@ -33,7 +33,22 @@ export const CreateEmpresa=async (req:Request,res:Response) => {
         res.status(501).json({error:true, msg:"conectese con el administrador EMPCONTROLL"})
     }
 }
-
+export const DeleteEmpresa =async (req:Request,res:Response) => {
+    try {
+        const idEmpresa=req.params.id
+        const resp = await Empresa.destroy({
+            where:{
+                id:idEmpresa
+            }
+        })
+        if(!resp){
+            return res.json({delete:false})
+        }
+        res.json({delete:true})
+    } catch (error) {
+        
+    }
+}
 
 
 

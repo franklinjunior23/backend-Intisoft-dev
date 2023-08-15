@@ -21,10 +21,25 @@ export const CreateSucursal =async (req:Request,res:Response) => {
             nombre,
             id_empresa:empresa
         })
-        res.status(400).json({create:true,creat})
+        res.json({create:true,creat})
         
     }
     return res.status(500).json({create:false,msg:"Tienes que completar los datos requeridos"})
+    } catch (error) {
+        
+    }
+}
+export const GetSucursalesbyEmpresa =async (req:Request,res:Response) => {
+    try {
+        const {nombre} = req.params;
+    const empre:any = await Empresa.findOne({where:{nombre}})
+    const busqueda = await Sucursal.findAll({
+        where:{
+            id_empresa:empre?.id
+        }
+    })
+    
+    res.json(busqueda)
     } catch (error) {
         
     }
