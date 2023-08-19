@@ -2,10 +2,6 @@ import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import { Request, Response } from "express";
 
-
-
-
-
 //empresasss 
 export const GetEmpresas =async(req:Request,res:Response)=>{
     try {

@@ -12,7 +12,6 @@ export const sequelize = new Sequelize (process.env.DBNAME || '' , process.env.U
  export const Connection =async()=>{
     try {
         await  sequelize.sync();
-        console.log("se conecto")
     } catch (error) {
         console.log(error)
     }
