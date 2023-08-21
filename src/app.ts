@@ -11,6 +11,7 @@ import "./app/models/Asociaciones"
 import EmpresasRoutes from './app/routes/Empresas.routes';
 import Sucursales_endpoint from './app/routes/Sucursales.routes';
 import UserRoutes from './app/routes/Users.routes';
+import DispostivoRoutes from './app/routes/Dispositivo.routes';
 app.use(cors({
     origin:'*'
 }))
@@ -19,9 +20,10 @@ app.use(`${point_defect}/auth/Login`,Login)
 app.use(`${point_defect}/Empresas`,EmpresasRoutes)
 app.use(`${point_defect}/Sucursales`,Sucursales_endpoint)
 app.use(`${point_defect}/Users`,UserRoutes)
+app.use(`${point_defect}/Dispositivos`,DispostivoRoutes)
+
 
 app.listen(puerto,async()=>{
-    
     // force: true 
     // alter: true
    // para tener cambios , actualizacion de la bd /

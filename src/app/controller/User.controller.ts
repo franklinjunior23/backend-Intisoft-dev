@@ -3,6 +3,7 @@ import Empresa from "../models/Empresa";
 import { Request, Response } from "express";
 import Sucursal from "../models/Sucursales";
 import Users from "../models/Users";
+import Dispositivo from "../models/Dispositvo";
 
 
 export const GetUsersByEmpresaAndSucursal =async(req:Request,res:Response)=>{
@@ -25,6 +26,9 @@ export const GetUsersByEmpresaAndSucursal =async(req:Request,res:Response)=>{
                         
                         }
                     ]
+                },
+                {
+                    model:Dispositivo
                 }
             ]
         })
@@ -75,7 +79,12 @@ export const GetUserById=async(req:Request,res:Response)=>{
         const resp = await Users.findOne({
             where:{
                 id
-            }
+            },
+            include:[
+                {
+                    model:Dispositivo
+                }
+            ]
         })
         if(!resp) return res.json({where:false})
         res.json({where:true,resp})

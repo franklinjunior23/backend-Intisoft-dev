@@ -11,29 +11,36 @@ try {
     // ROLES ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
     Roles.hasMany(Administradores, {
         foreignKey: 'id_rol',
+       
     });
     Administradores.belongsTo(Roles, {
         foreignKey: 'id_rol',
-        targetKey:'id'
+        targetKey:'id',
+       
     });
 
 
     // EMPRESA ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
     Empresa.hasMany(Sucursal,{
-        foreignKey:'id_empresa'
+        foreignKey:'id_empresa',
+       
     })
     Sucursal.belongsTo(Empresa,{
         foreignKey:'id_empresa',
-        targetKey:'id'
+        targetKey:'id',
+        
     })
 
      // USERS ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
     Sucursal.hasMany(Users,{
-        foreignKey:'IdSucursal'
+        foreignKey:'IdSucursal',
+        
     })
     Users.belongsTo(Sucursal,{
         foreignKey:'IdSucursal',
-        targetKey:'id'
+        targetKey:'id',
+        onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
+        onDelete: 'SET NULL'  
     })
 
     // Dispositivo ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
@@ -47,6 +54,17 @@ try {
         targetKey:'id',
         onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
         onDelete: 'SET NULL'     // Establecerá a NULL si se elimina la Sucursal
+    })
+    Users.hasOne(Dispositivo,{
+        foreignKey:'IdUser',
+        onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
+        onDelete: 'SET NULL'     // Establecerá a NULL si se elimina la Sucursal
+    })
+    Dispositivo.belongsTo(Users,{
+        foreignKey:'IdUser',
+        targetKey:'id',
+        onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
+        onDelete: 'SET NULL'  
     })
 
     Dispositivo.hasMany(DetalleDispositivo,{
