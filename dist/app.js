@@ -23,6 +23,8 @@ const point_defect = process.env.POINT || '/api/v1';
 require("./app/models/Asociaciones");
 const Empresas_routes_1 = __importDefault(require("./app/routes/Empresas.routes"));
 const Sucursales_routes_1 = __importDefault(require("./app/routes/Sucursales.routes"));
+const Users_routes_1 = __importDefault(require("./app/routes/Users.routes"));
+const Dispositivo_routes_1 = __importDefault(require("./app/routes/Dispositivo.routes"));
 app.use((0, cors_1.default)({
     origin: '*'
 }));
@@ -30,6 +32,8 @@ app.use(express_1.default.json());
 app.use(`${point_defect}/auth/Login`, Login_routes_1.default);
 app.use(`${point_defect}/Empresas`, Empresas_routes_1.default);
 app.use(`${point_defect}/Sucursales`, Sucursales_routes_1.default);
+app.use(`${point_defect}/Users`, Users_routes_1.default);
+app.use(`${point_defect}/Dispositivos`, Dispositivo_routes_1.default);
 app.listen(puerto, () => __awaiter(void 0, void 0, void 0, function* () {
     // force: true 
     // alter: true
@@ -37,4 +41,3 @@ app.listen(puerto, () => __awaiter(void 0, void 0, void 0, function* () {
     yield database_1.sequelize.sync({ alter: true });
     console.log(`http://localhost:${puerto}/api`);
 }));
-console.log("hola funciono");

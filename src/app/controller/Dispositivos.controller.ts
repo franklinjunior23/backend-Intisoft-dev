@@ -24,3 +24,13 @@ export const GetPcYLap = async(req:Request,res:Response):Promise<void>=>{
         console.log(error)
     }
 }
+
+
+export const CreateDisp = async(req:Request,res:Response):Promise<void>=>{
+    try {
+        const {empresa,sucursal}= req.params;
+        console.log(empresa,sucursal)
+    } catch (error) {
+        
+    }
+}

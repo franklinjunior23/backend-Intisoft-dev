@@ -8,21 +8,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Connection = exports.sequelize = void 0;
+exports.GetPcYLap = void 0;
 const sequelize_1 = require("sequelize");
-require("dotenv/config");
-exports.sequelize = new sequelize_1.Sequelize(process.env.DBNAME || '', process.env.USER || '', process.env.PASWORD, {
-    host: process.env.HOST || '',
-    port: Number(process.env.LOCAL),
-    dialect: 'mysql', /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */
-});
-const Connection = () => __awaiter(void 0, void 0, void 0, function* () {
+const Dispositvo_1 = __importDefault(require("../models/Dispositvo"));
+const Users_1 = __importDefault(require("../models/Users"));
+const GetPcYLap = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield exports.sequelize.sync();
+        const Data = yield Dispositvo_1.default.findAll({
+            where: {
+                tipo: {
+                    [sequelize_1.Op.in]: ['PC', 'LAPTOP']
+                },
+                IdUser: null
+            },
+            include: [
+                {
+                    model: Users_1.default
+                }
+            ]
+        });
+        res.json(Data);
     }
     catch (error) {
+        res.status(500).json({ error });
         console.log(error);
     }
 });
-exports.Connection = Connection;
+exports.GetPcYLap = GetPcYLap;
