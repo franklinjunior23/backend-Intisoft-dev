@@ -2,6 +2,8 @@ import { Op } from "sequelize";
 import Dispositivo from "../models/Dispositvo";
 import { Request, Response } from "express";
 import Users from "../models/Users";
+import Sucursal from "../models/Sucursales";
+import Empresa from "../models/Empresa";
 
 export const GetPcYLap = async(req:Request,res:Response):Promise<void>=>{
     try {
@@ -29,7 +31,24 @@ export const GetPcYLap = async(req:Request,res:Response):Promise<void>=>{
 export const CreateDisp = async(req:Request,res:Response):Promise<void>=>{
     try {
         const {empresa,sucursal}= req.params;
-        console.log(empresa,sucursal)
+        const data = req.body
+        const EmpresaBySucursal = await Sucursal.findOne({
+            where:{
+                nombre:sucursal
+            },
+
+            include:[
+                {model:Empresa,
+                where:{
+                    nombre:empresa
+                }}
+                   
+            ]
+        })
+
+        
+        res.json(EmpresaBySucursal)
+        console.log(EmpresaBySucursal,empresa,sucursal)
     } catch (error) {
         
     }
