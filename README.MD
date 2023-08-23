@@ -41,3 +41,14 @@ TRAER TODAS LAS EMPRESAS RELACIONADAS CON LAS SUCURSALES
 ------
 
 ## SUCURSALES DE UNA EMPRESA
+
+
+PARA REALIZAR LA BITACORA DE CADA PC LO QUE SE HZO :::
+
+AL MOMENTO DE HACER UNA ACTUALIZACION DEL SERVICIO - ESTARA CREANDO UN NUEVO INFORME QUE SERIA UNA FILA DE LA TABLA INFORMES , LO CUAL ESTARIA :
+{
+    IdDispositivo : (la pc que cambio);
+    fecha : ( la fecha que se realizo);
+    accion : ( mencionar que se hizo y todo ello );
+    observacion : ( el soporte menciona que es lo que porque cambio y todo ello )
+}
