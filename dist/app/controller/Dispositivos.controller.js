@@ -12,10 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetPcYLap = void 0;
+exports.DeleteDisp = exports.UpdateDisp = exports.GetsDispositivos = exports.CreateDisp = exports.GetPcYLap = void 0;
 const sequelize_1 = require("sequelize");
 const Dispositvo_1 = __importDefault(require("../models/Dispositvo"));
 const Users_1 = __importDefault(require("../models/Users"));
+const Sucursales_1 = __importDefault(require("../models/Sucursales"));
+const Empresa_1 = __importDefault(require("../models/Empresa"));
+const DetalleComponents_1 = __importDefault(require("../models/DetalleComponents"));
 const GetPcYLap = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const Data = yield Dispositvo_1.default.findAll({
@@ -39,3 +42,89 @@ const GetPcYLap = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.GetPcYLap = GetPcYLap;
+const CreateDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { empresa, sucursal } = req.params;
+        const data = req.body;
+        const EmpresaBySucursal = yield Sucursales_1.default.findOne({
+            where: {
+                nombre: sucursal
+            },
+            include: [
+                {
+                    model: Empresa_1.default,
+                    where: {
+                        nombre: empresa
+                    }
+                }
+            ]
+        });
+        if (!EmpresaBySucursal)
+            return res.json({ search: false });
+        const CreateDisp = yield Dispositvo_1.default.create(data);
+        const CreatComponDisp = yield DetalleComponents_1.default.create(Object.assign({ IdDispositivo: CreateDisp.id }, data));
+        if (CreateDisp && CreatComponDisp) {
+            return res.json({ create: true });
+        }
+    }
+    catch (error) {
+    }
+});
+exports.CreateDisp = CreateDisp;
+const GetsDispositivos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const Busq = yield Dispositvo_1.default.findAll({
+            include: [
+                {
+                    model: DetalleComponents_1.default
+                }
+            ]
+        });
+        res.json(Busq);
+    }
+    catch (error) {
+        res.json({ error });
+    }
+});
+exports.GetsDispositivos = GetsDispositivos;
+const UpdateDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const DatsNew = req.body;
+        const DataOld = yield Dispositvo_1.default.findOne({
+            where: {
+                id
+            },
+            include: [
+                {
+                    model: DetalleComponents_1.default,
+                }
+            ]
+        });
+        if (!DataOld)
+            return res.json({ error: true, search: false });
+        return res.json(DataOld);
+    }
+    catch (error) {
+        res.json({ error: true, UpdateDisp: exports.UpdateDisp });
+    }
+});
+exports.UpdateDisp = UpdateDisp;
+const DeleteDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const ExistData = yield Dispositvo_1.default.findOne({
+            where: { id },
+            include: [
+                { model: DetalleComponents_1.default }
+            ]
+        });
+        if (!ExistData)
+            return res.json({ search: false });
+        res.json({ search: true, ExistData });
+    }
+    catch (error) {
+        res.json({ error: true, msg: error });
+    }
+});
+exports.DeleteDisp = DeleteDisp;

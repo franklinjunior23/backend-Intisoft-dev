@@ -104,7 +104,30 @@ const GetUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.GetUserById = GetUserById;
 const DeleteUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const Exist = yield Users_1.default.findOne({
+            where: { id }
+        });
+        if (!Exist)
+            return res.json({ search: false });
+        res.json({ search: true, data: Exist });
+    }
+    catch (error) {
+    }
 });
 exports.DeleteUserById = DeleteUserById;
-const UpdateUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+const UpdateUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const Exist = yield Users_1.default.findOne({
+            where: { id }
+        });
+        if (!Exist)
+            return res.json({ search: false });
+        res.json({ search: true, data: Exist });
+    }
+    catch (error) {
+    }
+});
 exports.UpdateUserById = UpdateUserById;

@@ -26,7 +26,9 @@ const SignIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             where: { usuario: { [sequelize_1.Op.eq]: usuario } },
             include: [{ model: Roles_1.default }]
         });
-        if (!buscar) {
+        const VerifyPass = yield bcrypt_1.default.compare(contraseña, buscar.contraseña);
+        console.log(VerifyPass);
+        if (!buscar || !VerifyPass) {
             return res.json({ loged: false });
         }
         const user = {
@@ -39,6 +41,7 @@ const SignIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.json({ loged: true, token_user, user });
     }
     catch (error) {
+        res.json({ error: true, msg: error });
     }
 });
 exports.SignIn = SignIn;
@@ -53,7 +56,7 @@ const CreateUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return res.json({ create: true, Nuevo });
     }
     catch (error) {
-        console.log(error);
+        res.json({ error: true, msg: error });
     }
 });
 exports.CreateUsuario = CreateUsuario;
@@ -65,6 +68,7 @@ const GetUsuariosAuth = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.json(result);
     }
     catch (error) {
+        res.json({ error: true, msg: error });
     }
 });
 exports.GetUsuariosAuth = GetUsuariosAuth;

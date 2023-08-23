@@ -25,6 +25,7 @@ const Empresas_routes_1 = __importDefault(require("./app/routes/Empresas.routes"
 const Sucursales_routes_1 = __importDefault(require("./app/routes/Sucursales.routes"));
 const Users_routes_1 = __importDefault(require("./app/routes/Users.routes"));
 const Dispositivo_routes_1 = __importDefault(require("./app/routes/Dispositivo.routes"));
+const Informes_routes_1 = __importDefault(require("./app/routes/Informes.routes"));
 app.use((0, cors_1.default)({
     origin: '*'
 }));
@@ -34,6 +35,7 @@ app.use(`${point_defect}/Empresas`, Empresas_routes_1.default);
 app.use(`${point_defect}/Sucursales`, Sucursales_routes_1.default);
 app.use(`${point_defect}/Users`, Users_routes_1.default);
 app.use(`${point_defect}/Dispositivos`, Dispositivo_routes_1.default);
+app.use(`${point_defect}/Informes`, Informes_routes_1.default);
 app.listen(puerto, () => __awaiter(void 0, void 0, void 0, function* () {
     // force: true 
     // alter: true

@@ -8,6 +8,7 @@ const Administradores_1 = __importDefault(require("./Administradores"));
 const DetalleComponents_1 = __importDefault(require("./DetalleComponents"));
 const Dispositvo_1 = __importDefault(require("./Dispositvo"));
 const Empresa_1 = __importDefault(require("./Empresa"));
+const Informes_1 = __importDefault(require("./Informes"));
 const Roles_1 = __importDefault(require("./Roles"));
 const Sucursales_1 = __importDefault(require("./Sucursales"));
 const Users_1 = __importDefault(require("./Users"));
@@ -71,6 +72,17 @@ try {
         targetKey: 'id',
         onUpdate: 'SET NULL',
         onDelete: 'SET NULL' // Establecerá a NULL si se elimina la Sucursal
+    });
+    Dispositvo_1.default.hasMany(Informes_1.default, {
+        foreignKey: 'IdDispositivo',
+        onUpdate: 'SET NULL',
+        onDelete: 'SET NULL'
+    });
+    Informes_1.default.belongsTo(Dispositvo_1.default, {
+        foreignKey: 'IdDispositivo',
+        targetKey: 'id',
+        onUpdate: 'SET NULL',
+        onDelete: 'SET NULL'
     });
 }
 catch (error) {
