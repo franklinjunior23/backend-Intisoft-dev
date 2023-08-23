@@ -3,6 +3,7 @@ import Administradores from "./Administradores";
 import DetalleDispositivo from "./DetalleComponents";
 import Dispositivo from "./Dispositvo";
 import Empresa from "./Empresa";
+import Informes from "./Informes";
 import Roles from "./Roles";
 import Sucursal from "./Sucursales";
 import Users from "./Users";
@@ -77,6 +78,18 @@ try {
         targetKey:'id',
         onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
         onDelete: 'SET NULL'     // Establecerá a NULL si se elimina la Sucursal
+    })
+
+    Dispositivo.hasMany(Informes,{
+        foreignKey:'IdDispositivo',
+        onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
+        onDelete: 'SET NULL'  
+    })
+    Informes.belongsTo(Dispositivo,{
+        foreignKey:'IdDispositivo',
+        targetKey:'id',
+        onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
+        onDelete: 'SET NULL'  
     })
 
 } catch (error) {

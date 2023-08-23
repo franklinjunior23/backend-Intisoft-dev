@@ -29,7 +29,7 @@ export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
 }
 
 
-export const CreateDisp = async (req: Request, res: Response)=> {
+export const CreateDisp = async (req: Request, res: Response) => {
     try {
         const { empresa, sucursal } = req.params;
         const data = req.body
@@ -55,7 +55,7 @@ export const CreateDisp = async (req: Request, res: Response)=> {
         })
 
         if (CreateDisp && CreatComponDisp) {
-            return  res.json({create:true})
+            return res.json({ create: true })
         }
 
 
@@ -64,17 +64,53 @@ export const CreateDisp = async (req: Request, res: Response)=> {
 
     }
 }
-export const GetsDispositivos = async(req:Request,res:Response)=>{
+export const GetsDispositivos = async (req: Request, res: Response) => {
     try {
         const Busq = await Dispositivo.findAll({
-            include:[
+            include: [
                 {
-                    model:DetalleDispositivo
+                    model: DetalleDispositivo
                 }
             ]
         })
         res.json(Busq)
     } catch (error) {
-        res.json({error})
+        res.json({ error })
+    }
+}
+
+export const UpdateDisp = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        const DatsNew = req.body
+        const DataOld = await Dispositivo.findOne({
+            where: {
+                id
+            },
+            include: [
+                {
+                    model: DetalleDispositivo,
+                }
+            ]
+        })
+        if (!DataOld) return res.json({ error: true, search: false })
+        return res.json(DataOld);
+    } catch (error) {
+        res.json({ error: true, UpdateDisp })
+    }
+}
+export const DeleteDisp = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const ExistData = await Dispositivo.findOne({
+            where: { id },
+            include:[
+                {model:DetalleDispositivo}
+            ]
+        })
+        if (!ExistData) return res.json({search:false})
+        res.json({search:true,ExistData})
+    } catch (error) {
+        res.json({ error: true, msg: error })
     }
 }
