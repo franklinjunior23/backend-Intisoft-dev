@@ -24,15 +24,15 @@ const GetPcYLap = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const Data = yield Dispositvo_1.default.findAll({
             where: {
                 tipo: {
-                    [sequelize_1.Op.in]: ['PC', 'LAPTOP']
+                    [sequelize_1.Op.in]: ["PC", "LAPTOP"],
                 },
-                IdUser: null
+                IdUser: null,
             },
             include: [
                 {
-                    model: Users_1.default
-                }
-            ]
+                    model: Users_1.default,
+                },
+            ],
         });
         res.json(Data);
     }
@@ -48,16 +48,16 @@ const CreateDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const data = req.body;
         const EmpresaBySucursal = yield Sucursales_1.default.findOne({
             where: {
-                nombre: sucursal
+                nombre: sucursal,
             },
             include: [
                 {
                     model: Empresa_1.default,
                     where: {
-                        nombre: empresa
-                    }
-                }
-            ]
+                        nombre: empresa,
+                    },
+                },
+            ],
         });
         if (!EmpresaBySucursal)
             return res.json({ search: false });
@@ -67,8 +67,7 @@ const CreateDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return res.json({ create: true });
         }
     }
-    catch (error) {
-    }
+    catch (error) { }
 });
 exports.CreateDisp = CreateDisp;
 const GetsDispositivos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -76,9 +75,9 @@ const GetsDispositivos = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const Busq = yield Dispositvo_1.default.findAll({
             include: [
                 {
-                    model: DetalleComponents_1.default
-                }
-            ]
+                    model: DetalleComponents_1.default,
+                },
+            ],
         });
         res.json(Busq);
     }
@@ -93,13 +92,13 @@ const UpdateDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const DatsNew = req.body;
         const DataOld = yield Dispositvo_1.default.findOne({
             where: {
-                id
+                id,
             },
             include: [
                 {
                     model: DetalleComponents_1.default,
-                }
-            ]
+                },
+            ],
         });
         if (!DataOld)
             return res.json({ error: true, search: false });
@@ -115,13 +114,16 @@ const DeleteDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { id } = req.params;
         const ExistData = yield Dispositvo_1.default.findOne({
             where: { id },
-            include: [
-                { model: DetalleComponents_1.default }
-            ]
+            include: [{ model: DetalleComponents_1.default }],
         });
         if (!ExistData)
             return res.json({ search: false });
-        res.json({ search: true, ExistData });
+        yield Dispositvo_1.default.destroy({
+            where: {
+                id,
+            },
+        });
+        res.json({ search: true });
     }
     catch (error) {
         res.json({ error: true, msg: error });

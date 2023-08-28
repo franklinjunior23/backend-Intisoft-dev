@@ -42,7 +42,6 @@ export const GetUsersByEmpresaAndSucursal = async (req: Request, res: Response) 
 export const CreateUserBySucursal = async (req: Request, res: Response) => {
     try {
         const { empresa, sucursal } = req.params
-        console.log(empresa, sucursal)
         const datoUser = req.body
         const resSuc: any = await Sucursal.findOne({
             where: {

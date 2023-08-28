@@ -101,11 +101,13 @@ export const DeleteDisp = async (req: Request, res: Response) => {
       include: [{ model: DetalleDispositivo }],
     });
     if (!ExistData) return res.json({ search: false });
+
     await Dispositivo.destroy({
       where: {
         id,
       },
     });
+    
     res.json({ search: true});
   } catch (error) {
     res.json({ error: true, msg: error });
