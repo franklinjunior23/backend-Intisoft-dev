@@ -98,11 +98,18 @@ export const DeleteUserById = async (req: Request, res: Response) => {
         const Exist = await Users.findOne({
             where:{id}
         });
-
-        if(!Exist)return res.json({search:false})
-        res.json({search:true,data:Exist})
+        console.log(id)
+        if(Exist){
+            await Users.destroy({
+               where:{
+                id
+               }
+            })
+            return res.json({search:true})
+        }
+        res.json({search:false})
     } catch (error) {
-
+        console.log(error)
     }
 }
 export const UpdateUserById = async (req: Request, res: Response) => {
@@ -111,7 +118,7 @@ export const UpdateUserById = async (req: Request, res: Response) => {
         const Exist = await Users.findOne({
             where:{id}
         });
-
+        console.log("estas editando")
         if(!Exist)return res.json({search:false})
         res.json({search:true,data:Exist})
     } catch (error) {
