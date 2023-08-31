@@ -31,7 +31,9 @@ export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
 export const CreateDisp = async (req: Request, res: Response) => {
   try {
     const { empresa, sucursal } = req.params;
+
     const data = req.body;
+
     const EmpresaBySucursal = await Sucursal.findOne({
       where: {
         nombre: sucursal,
@@ -45,12 +47,24 @@ export const CreateDisp = async (req: Request, res: Response) => {
         },
       ],
     });
+
     if (!EmpresaBySucursal) return res.json({ search: false });
 
+
+    const {Ram_modulos,Almacenamiento} =data;
+
+    const DatosProx ={
+      Ram_cantidad:Ram_modulos.length,
+      Ram_Modulos:Ram_modulos,
+      Almacenamiento_canti:Almacenamiento.length,
+      Almacenamiento_detalle:Almacenamiento
+    }
+
     const CreateDisp: any = await Dispositivo.create(data);
+
     const CreatComponDisp = await DetalleDispositivo.create({
       IdDispositivo: CreateDisp.id,
-      ...data,
+      ...data,...DatosProx
     });
 
     if (CreateDisp && CreatComponDisp) {
@@ -113,3 +127,22 @@ export const DeleteDisp = async (req: Request, res: Response) => {
     res.json({ error: true, msg: error });
   }
 };
+export const GetsDispositivo = async (req: Request, res: Response) => {
+  try {
+    const {id} = req.params
+    console.log(id)
+    const Exist = await Dispositivo.findOne({
+      where:{
+        id
+      },
+      include:[
+        {model:DetalleDispositivo}
+      ]
+    })
+    console.log(Exist)
+      return res.json({data:Exist})
+    
+  } catch (error) {
+    
+  }
+}
