@@ -91,6 +91,7 @@ export const UpdateDisp = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const DatsNew = req.body;
+    console.log(DatsNew)
     const DataOld = await Dispositivo.findOne({
       where: {
         id,
@@ -102,7 +103,11 @@ export const UpdateDisp = async (req: Request, res: Response) => {
       ],
     });
     if (!DataOld) return res.json({ error: true, search: false });
+
+
     return res.json(DataOld);
+
+    
   } catch (error) {
     res.json({ error: true, UpdateDisp });
   }

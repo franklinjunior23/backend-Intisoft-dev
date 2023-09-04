@@ -13,6 +13,9 @@ const Dispositivo = sequelize.define("Dispositivo", {
   tipo: {
     type: DataType.STRING,
   },
+  tipo_Disp:{
+    type:DataType.STRING
+  },
   marca: {
     type: DataType.STRING,
   },

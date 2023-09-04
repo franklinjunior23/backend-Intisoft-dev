@@ -115,12 +115,20 @@ export const DeleteUserById = async (req: Request, res: Response) => {
 export const UpdateUserById = async (req: Request, res: Response) => {
     try {
         const {id}= req.params
-        const Exist = await Users.findOne({
-            where:{id}
-        });
-        console.log("estas editando")
+        const NewDatos = req.body
+        const Exist:any = await Users.findByPk(id)
+        const cambios:any = {};
+
         if(!Exist)return res.json({search:false})
-        res.json({search:true,data:Exist})
+
+        for(const CamposUpdate in NewDatos){
+            if(Exist[CamposUpdate]!== NewDatos[CamposUpdate]){
+                cambios[CamposUpdate] = NewDatos[CamposUpdate]
+            }
+        }
+        await Exist.update(cambios)
+        
+        res.json({search:true,data:Exist,cambios})
     } catch (error) {
 
     }
