@@ -144,7 +144,6 @@ export const GetsDispositivo = async (req: Request, res: Response) => {
         {model:DetalleDispositivo}
       ]
     })
-    console.log(Exist)
       return res.json({data:Exist})
     
   } catch (error) {
