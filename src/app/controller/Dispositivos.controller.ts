@@ -31,7 +31,6 @@ export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
 export const CreateDisp = async (req: Request, res: Response) => {
   try {
     const { empresa, sucursal } = req.params;
-
     const data = req.body;
 
     const EmpresaBySucursal = await Sucursal.findOne({
@@ -47,7 +46,15 @@ export const CreateDisp = async (req: Request, res: Response) => {
         },
       ],
     });
-
+    const EmpresaSearch:any= await Sucursal.findOne({
+      where:{
+        nombre:sucursal
+      },
+      include:[
+        {model:Empresa,
+        where:{nombre:empresa}}
+      ]
+    })
     if (!EmpresaBySucursal) return res.json({ search: false });
 
 
@@ -60,11 +67,13 @@ export const CreateDisp = async (req: Request, res: Response) => {
       Almacenamiento_detalle:Almacenamiento
     }
 
-    const CreateDisp: any = await Dispositivo.create(data);
+    const CreateDisp: any = await Dispositivo.create({...data, IdSucursal:EmpresaSearch?.id});
 
     const CreatComponDisp = await DetalleDispositivo.create({
       IdDispositivo: CreateDisp.id,
-      ...data,...DatosProx
+      ...data,
+      ...DatosProx,
+     
     });
 
     if (CreateDisp && CreatComponDisp) {
