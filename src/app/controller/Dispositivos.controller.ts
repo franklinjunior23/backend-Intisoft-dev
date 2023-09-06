@@ -100,25 +100,36 @@ export const UpdateDisp = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const DatsNew = req.body;
-    console.log(DatsNew)
-    const DataOld = await Dispositivo.findOne({
+
+    // Buscar el registro en la tabla Dispositivo sin incluir modelos relacionados
+    const DataOld: any = await Dispositivo.findOne({
       where: {
         id,
       },
-      include: [
-        {
-          model: DetalleDispositivo,
-        },
-      ],
+      include:[
+        {model:DetalleDispositivo}
+      ]
     });
-    if (!DataOld) return res.json({ error: true, search: false });
+    const DatosUpdate:any ={DetalleDispositivos:{}};
+    for(const camposUpdate in DatsNew){
 
+      if(DataOld[camposUpdate]!== DatsNew[camposUpdate]){
+        DatosUpdate[camposUpdate]= DatsNew[camposUpdate];
+      }
+    }
+    for(const CamposUpdate in DatsNew){
+      if(DataOld.DetalleDispositivos[CamposUpdate] !== DatsNew[CamposUpdate]){
+        DatosUpdate.DetalleDispositivos[CamposUpdate]= DatsNew[CamposUpdate];
+      }
+    }
+    // DatosUpdate["DetalleDispositivos"][camposUpdate]=DatsNew[camposUpdate]
 
-    return res.json(DataOld);
-
-    
+    if (!DataOld) return res.json({ error: true, search: false,});
+    console.log(DatosUpdate)
+    return res.json({ success: true,DataOld ,DatosUpdate });
   } catch (error) {
-    res.json({ error: true, UpdateDisp });
+    console.log(error)
+    res.json({ error: true, message: 'Error al actualizar el dispositivo' });
   }
 };
 export const DeleteDisp = async (req: Request, res: Response) => {
@@ -134,6 +145,7 @@ export const DeleteDisp = async (req: Request, res: Response) => {
       where: {
         id,
       },
+      
     });
     
     res.json({ search: true});

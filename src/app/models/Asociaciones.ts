@@ -70,14 +70,14 @@ try {
 
     Dispositivo.hasMany(DetalleDispositivo,{
         foreignKey:'IdDispositivo',
-        onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
-        onDelete: 'SET NULL'     // Establecerá a NULL si se elimina la Sucursal
+        onUpdate: 'CASCADE',    // Establecerá a NULL si se actualiza la Sucursal
+        onDelete: 'CASCADE'     // Establecerá a NULL si se elimina la Sucursal
     })
     DetalleDispositivo.belongsTo(Dispositivo,{
         foreignKey:'IdDispositivo',
         targetKey:'id',
-        onUpdate: 'SET NULL',    // Establecerá a NULL si se actualiza la Sucursal
-        onDelete: 'SET NULL'     // Establecerá a NULL si se elimina la Sucursal
+        onUpdate: 'CASCADE',    // Establecerá a NULL si se actualiza la Sucursal
+        onDelete: 'CASCADE'     // Establecerá a NULL si se elimina la Sucursal
     })
 
     Dispositivo.hasMany(Informes,{
