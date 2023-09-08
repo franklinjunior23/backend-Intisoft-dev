@@ -58,11 +58,11 @@ export const CreateDisp = async (req: Request, res: Response) => {
     if (!EmpresaBySucursal) return res.json({ search: false });
 
 
-    const {Ram_modulos,Almacenamiento} =data;
+    const {Ram_Modulos,Almacenamiento} =data;
 
     const DatosProx ={
-      Ram_cantidad:Ram_modulos.length,
-      Ram_Modulos:Ram_modulos,
+      Ram_cantidad:Ram_Modulos.length,
+      Ram_Modulos:Ram_Modulos,
       Almacenamiento_canti:Almacenamiento.length,
       Almacenamiento_detalle:Almacenamiento
     }
@@ -101,8 +101,32 @@ export const UpdateDisp = async (req: Request, res: Response) => {
     const { id } = req.params;
     const DatsNew = req.body;
 
+    const DataDispositivo:any = await Dispositivo.findByPk(id);
+    const DataDetalleDisp:any = await DetalleDispositivo.findOne({where:{IdDispositivo:id}})
+    console.log(DataDetalleDisp.id)
+    const CamposUpd:any ={}
+    for(const CampUpdate in DatsNew){
+      if(DataDispositivo[CampUpdate]!== DatsNew[CampUpdate]){
+        CamposUpd[CampUpdate]=DatsNew[CampUpdate]
+      }
+    }
+    if(CamposUpd){
+      DataDispositivo.update(CamposUpd)
+    }
+   
+
+    const Campos:any={}
+    for(const CampUpdate in DatsNew){
+      if(DataDetalleDisp[CampUpdate]!== DatsNew[CampUpdate]){
+        Campos[CampUpdate]=DatsNew[CampUpdate]
+      }
+    }
+    DataDetalleDisp.update({...Campos,Almacenamiento_detalle:Campos['Almacenamiento']})
+    return res.json({Campos})
+
+
     // Buscar el registro en la tabla Dispositivo sin incluir modelos relacionados
-    const DataOld: any = await Dispositivo.findOne({
+   /*  const DataOld: any = await Dispositivo.findOne({
       where: {
         id,
       },
@@ -110,23 +134,35 @@ export const UpdateDisp = async (req: Request, res: Response) => {
         {model:DetalleDispositivo}
       ]
     });
-    const DatosUpdate:any ={DetalleDispositivos:{}};
+    const DatosUpdate:any ={};
     for(const camposUpdate in DatsNew){
 
       if(DataOld[camposUpdate]!== DatsNew[camposUpdate]){
         DatosUpdate[camposUpdate]= DatsNew[camposUpdate];
       }
     }
-    for(const CamposUpdate in DatsNew){
-      if(DataOld.DetalleDispositivos[CamposUpdate] !== DatsNew[CamposUpdate]){
-        DatosUpdate.DetalleDispositivos[CamposUpdate]= DatsNew[CamposUpdate];
-      }
-    }
+    
     // DatosUpdate["DetalleDispositivos"][camposUpdate]=DatsNew[camposUpdate]
-
+    function compararObjetos(obj1:any, obj2:any, busqueda:any, ruta = "") {
+      for (const key in obj1) {
+        if (obj2.hasOwnProperty(key)) {
+          if (typeof obj1[key] === "object" && typeof obj2[key] === "object") {
+            compararObjetos(obj1[key], obj2[key], busqueda, ruta + key + ".");
+          } else if (obj1[key] !== obj2[key]) {
+            busqueda[key] = obj1[key];
+          }
+        } else {
+          busqueda[key] = obj1[key];
+        }
+      }
+      return busqueda
+    }
+  
+    const DatosUpd=compararObjetos(DatsNew , DataOld, DatosUpdate);
+    console.log("datos cambiados :   "+DatosUpd)
     if (!DataOld) return res.json({ error: true, search: false,});
-    console.log(DatosUpdate)
-    return res.json({ success: true,DataOld ,DatosUpdate });
+    return res.json({ success: true,DatosUpd });
+*/
   } catch (error) {
     console.log(error)
     res.json({ error: true, message: 'Error al actualizar el dispositivo' });
