@@ -5,6 +5,7 @@ import Users from "../models/Users";
 import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import DetalleDispositivo from "../models/DetalleComponents";
+import { error } from "console";
 
 export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -83,11 +84,24 @@ export const CreateDisp = async (req: Request, res: Response) => {
 };
 export const GetsDispositivos = async (req: Request, res: Response) => {
   try {
+    const data = req.query;
+    console.log(data)
+    const {empresa,sucursal}=req.query;
+    if(empresa&&sucursal == undefined){
+       throw new Error("Error Parametros");
+    }
+    console.log(empresa,sucursal)
     const Busq = await Dispositivo.findAll({
       include: [
         {
           model: DetalleDispositivo,
         },
+        {
+          model:Sucursal,where:{nombre:sucursal},
+          include:[
+            {model:Empresa,where:{nombre:empresa}}
+          ]
+        }
       ],
     });
     res.json(Busq);
@@ -207,3 +221,35 @@ export const GetsDispositivo = async (req: Request, res: Response) => {
     
   }
 }
+
+export const GetsDispUsingUser = async (req: Request, res: Response) => {
+  try {
+    const data = req.query;
+    console.log(data)
+    const { empresa, sucursal } = req.query;
+    const resp = await Dispositivo.findAll({
+      include: [
+        {
+          model: Sucursal,
+          where: {
+            nombre: sucursal,
+          },
+          include: [
+            {
+              model: Empresa,
+              where: {
+                nombre: empresa,
+              },
+            },
+          ],
+        },
+        {
+          model:Users
+        }
+      ],
+    });
+    res.json(resp);
+  } catch (error) {
+    console.log(error);
+  }
+};
