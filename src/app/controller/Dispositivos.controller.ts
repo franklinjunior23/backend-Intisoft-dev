@@ -47,61 +47,63 @@ export const CreateDisp = async (req: Request, res: Response) => {
         },
       ],
     });
-    const EmpresaSearch:any= await Sucursal.findOne({
-      where:{
-        nombre:sucursal
+    const EmpresaSearch: any = await Sucursal.findOne({
+      where: {
+        nombre: sucursal,
       },
-      include:[
-        {model:Empresa,
-        where:{nombre:empresa}}
-      ]
-    })
+      include: [{ model: Empresa, where: { nombre: empresa } }],
+    });
     if (!EmpresaBySucursal) return res.json({ search: false });
 
+    const { Ram_Modulos, Almacenamiento } = data;
+    if (Ram_Modulos && Almacenamiento) {
+      const DatosProx = {
+        Ram_cantidad: Ram_Modulos.length,
+        Ram_Modulos: Ram_Modulos,
+        Almacenamiento_canti: Almacenamiento.length,
+        Almacenamiento_detalle: Almacenamiento,
+      };
+      const CreateDisp: any = await Dispositivo.create({
+        ...data,
+        IdSucursal: EmpresaSearch?.id,
+      });
 
-    const {Ram_Modulos,Almacenamiento} =data;
-
-    const DatosProx ={
-      Ram_cantidad:Ram_Modulos.length,
-      Ram_Modulos:Ram_Modulos,
-      Almacenamiento_canti:Almacenamiento.length,
-      Almacenamiento_detalle:Almacenamiento
+      const CreatComponDisp = await DetalleDispositivo.create({
+        IdDispositivo: CreateDisp.id,
+        ...data,
+        ...DatosProx,
+      });
+      if (CreateDisp && CreatComponDisp) {
+        return res.json({ create: true });
+      }
     }
 
-    const CreateDisp: any = await Dispositivo.create({...data, IdSucursal:EmpresaSearch?.id});
+   const respCreat:any =await Dispositivo.create({ ...data, IdSucursal: EmpresaSearch?.id });
+    await DetalleDispositivo.create({...data, IdDispositivo: respCreat?.id,})
+    return res.json({ create: true });
 
-    const CreatComponDisp = await DetalleDispositivo.create({
-      IdDispositivo: CreateDisp.id,
-      ...data,
-      ...DatosProx,
-     
-    });
-
-    if (CreateDisp && CreatComponDisp) {
-      return res.json({ create: true });
-    }
+    console.log(CreateDisp);
   } catch (error) {}
 };
 export const GetsDispositivos = async (req: Request, res: Response) => {
   try {
     const data = req.query;
-    console.log(data)
-    const {empresa,sucursal}=req.query;
-    if(empresa&&sucursal == undefined){
-       throw new Error("Error Parametros");
+    console.log(data);
+    const { empresa, sucursal } = req.query;
+    if (empresa && sucursal == undefined) {
+      throw new Error("Error Parametros");
     }
-    console.log(empresa,sucursal)
+    console.log(empresa, sucursal);
     const Busq = await Dispositivo.findAll({
       include: [
         {
           model: DetalleDispositivo,
         },
         {
-          model:Sucursal,where:{nombre:sucursal},
-          include:[
-            {model:Empresa,where:{nombre:empresa}}
-          ]
-        }
+          model: Sucursal,
+          where: { nombre: sucursal },
+          include: [{ model: Empresa, where: { nombre: empresa } }],
+        },
       ],
     });
     res.json(Busq);
@@ -115,32 +117,35 @@ export const UpdateDisp = async (req: Request, res: Response) => {
     const { id } = req.params;
     const DatsNew = req.body;
 
-    const DataDispositivo:any = await Dispositivo.findByPk(id);
-    const DataDetalleDisp:any = await DetalleDispositivo.findOne({where:{IdDispositivo:id}})
-    console.log(DataDetalleDisp.id)
-    const CamposUpd:any ={}
-    for(const CampUpdate in DatsNew){
-      if(DataDispositivo[CampUpdate]!== DatsNew[CampUpdate]){
-        CamposUpd[CampUpdate]=DatsNew[CampUpdate]
+    const DataDispositivo: any = await Dispositivo.findByPk(id);
+    const DataDetalleDisp: any = await DetalleDispositivo.findOne({
+      where: { IdDispositivo: id },
+    });
+    console.log(DataDetalleDisp.id);
+    const CamposUpd: any = {};
+    for (const CampUpdate in DatsNew) {
+      if (DataDispositivo[CampUpdate] !== DatsNew[CampUpdate]) {
+        CamposUpd[CampUpdate] = DatsNew[CampUpdate];
       }
     }
-    if(CamposUpd){
-      DataDispositivo.update(CamposUpd)
+    if (CamposUpd) {
+      DataDispositivo.update(CamposUpd);
     }
-   
 
-    const Campos:any={}
-    for(const CampUpdate in DatsNew){
-      if(DataDetalleDisp[CampUpdate]!== DatsNew[CampUpdate]){
-        Campos[CampUpdate]=DatsNew[CampUpdate]
+    const Campos: any = {};
+    for (const CampUpdate in DatsNew) {
+      if (DataDetalleDisp[CampUpdate] !== DatsNew[CampUpdate]) {
+        Campos[CampUpdate] = DatsNew[CampUpdate];
       }
     }
-    DataDetalleDisp.update({...Campos,Almacenamiento_detalle:Campos['Almacenamiento']})
-    return res.json({Campos})
-
+    DataDetalleDisp.update({
+      ...Campos,
+      Almacenamiento_detalle: Campos["Almacenamiento"],
+    });
+    return res.json({ Campos });
 
     // Buscar el registro en la tabla Dispositivo sin incluir modelos relacionados
-   /*  const DataOld: any = await Dispositivo.findOne({
+    /*  const DataOld: any = await Dispositivo.findOne({
       where: {
         id,
       },
@@ -178,8 +183,8 @@ export const UpdateDisp = async (req: Request, res: Response) => {
     return res.json({ success: true,DatosUpd });
 */
   } catch (error) {
-    console.log(error)
-    res.json({ error: true, message: 'Error al actualizar el dispositivo' });
+    console.log(error);
+    res.json({ error: true, message: "Error al actualizar el dispositivo" });
   }
 };
 export const DeleteDisp = async (req: Request, res: Response) => {
@@ -195,37 +200,31 @@ export const DeleteDisp = async (req: Request, res: Response) => {
       where: {
         id,
       },
-      
     });
-    
-    res.json({ search: true});
+
+    res.json({ search: true });
   } catch (error) {
     res.json({ error: true, msg: error });
   }
 };
 export const GetsDispositivo = async (req: Request, res: Response) => {
   try {
-    const {id} = req.params
-    console.log(id)
+    const { id } = req.params;
+    console.log(id);
     const Exist = await Dispositivo.findOne({
-      where:{
-        id
+      where: {
+        id,
       },
-      include:[
-        {model:DetalleDispositivo}
-      ]
-    })
-      return res.json({data:Exist})
-    
-  } catch (error) {
-    
-  }
-}
+      include: [{ model: DetalleDispositivo }],
+    });
+    return res.json({ data: Exist });
+  } catch (error) {}
+};
 
 export const GetsDispUsingUser = async (req: Request, res: Response) => {
   try {
     const data = req.query;
-    console.log(data)
+    console.log(data);
     const { empresa, sucursal } = req.query;
     const resp = await Dispositivo.findAll({
       include: [
@@ -244,8 +243,8 @@ export const GetsDispUsingUser = async (req: Request, res: Response) => {
           ],
         },
         {
-          model:Users
-        }
+          model: Users,
+        },
       ],
     });
     res.json(resp);
