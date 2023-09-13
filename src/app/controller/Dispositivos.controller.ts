@@ -176,6 +176,7 @@ export const UpdateDisp = async (req: Request, res: Response) => {
       }
       return busqueda
     }
+    
   
     const DatosUpd=compararObjetos(DatsNew , DataOld, DatosUpdate);
     console.log("datos cambiados :   "+DatosUpd)
@@ -215,7 +216,8 @@ export const GetsDispositivo = async (req: Request, res: Response) => {
       where: {
         id,
       },
-      include: [{ model: DetalleDispositivo }],
+      include: [{ model: DetalleDispositivo },{model:Users}],
+
     });
     return res.json({ data: Exist });
   } catch (error) {}
