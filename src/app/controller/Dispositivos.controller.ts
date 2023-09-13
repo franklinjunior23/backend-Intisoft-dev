@@ -78,8 +78,11 @@ export const CreateDisp = async (req: Request, res: Response) => {
       }
     }
 
-   const respCreat:any =await Dispositivo.create({ ...data, IdSucursal: EmpresaSearch?.id });
-    await DetalleDispositivo.create({...data, IdDispositivo: respCreat?.id,})
+    const respCreat: any = await Dispositivo.create({
+      ...data,
+      IdSucursal: EmpresaSearch?.id,
+    });
+    await DetalleDispositivo.create({ ...data, IdDispositivo: respCreat?.id });
     return res.json({ create: true });
 
     console.log(CreateDisp);
@@ -87,8 +90,6 @@ export const CreateDisp = async (req: Request, res: Response) => {
 };
 export const GetsDispositivos = async (req: Request, res: Response) => {
   try {
-    const data = req.query;
-    console.log(data);
     const { empresa, sucursal } = req.query;
     if (empresa && sucursal == undefined) {
       throw new Error("Error Parametros");
@@ -121,16 +122,22 @@ export const UpdateDisp = async (req: Request, res: Response) => {
     const DataDetalleDisp: any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: id },
     });
-    console.log(DataDetalleDisp.id);
+
+    console.log(DatsNew)
     const CamposUpd: any = {};
     for (const CampUpdate in DatsNew) {
       if (DataDispositivo[CampUpdate] !== DatsNew[CampUpdate]) {
         CamposUpd[CampUpdate] = DatsNew[CampUpdate];
       }
     }
-    if (CamposUpd) {
+
+    if(DatsNew?.IdUser == "null" ){
+      console.log("funciono")
+        DataDispositivo.update({...CamposUpd,IdUser:null});
+    }else{
       DataDispositivo.update(CamposUpd);
     }
+    
 
     const Campos: any = {};
     for (const CampUpdate in DatsNew) {
@@ -144,45 +151,6 @@ export const UpdateDisp = async (req: Request, res: Response) => {
     });
     return res.json({ Campos });
 
-    // Buscar el registro en la tabla Dispositivo sin incluir modelos relacionados
-    /*  const DataOld: any = await Dispositivo.findOne({
-      where: {
-        id,
-      },
-      include:[
-        {model:DetalleDispositivo}
-      ]
-    });
-    const DatosUpdate:any ={};
-    for(const camposUpdate in DatsNew){
-
-      if(DataOld[camposUpdate]!== DatsNew[camposUpdate]){
-        DatosUpdate[camposUpdate]= DatsNew[camposUpdate];
-      }
-    }
-    
-    // DatosUpdate["DetalleDispositivos"][camposUpdate]=DatsNew[camposUpdate]
-    function compararObjetos(obj1:any, obj2:any, busqueda:any, ruta = "") {
-      for (const key in obj1) {
-        if (obj2.hasOwnProperty(key)) {
-          if (typeof obj1[key] === "object" && typeof obj2[key] === "object") {
-            compararObjetos(obj1[key], obj2[key], busqueda, ruta + key + ".");
-          } else if (obj1[key] !== obj2[key]) {
-            busqueda[key] = obj1[key];
-          }
-        } else {
-          busqueda[key] = obj1[key];
-        }
-      }
-      return busqueda
-    }
-    
-  
-    const DatosUpd=compararObjetos(DatsNew , DataOld, DatosUpdate);
-    console.log("datos cambiados :   "+DatosUpd)
-    if (!DataOld) return res.json({ error: true, search: false,});
-    return res.json({ success: true,DatosUpd });
-*/
   } catch (error) {
     console.log(error);
     res.json({ error: true, message: "Error al actualizar el dispositivo" });
@@ -216,8 +184,7 @@ export const GetsDispositivo = async (req: Request, res: Response) => {
       where: {
         id,
       },
-      include: [{ model: DetalleDispositivo },{model:Users}],
-
+      include: [{ model: DetalleDispositivo }, { model: Users }],
     });
     return res.json({ data: Exist });
   } catch (error) {}
