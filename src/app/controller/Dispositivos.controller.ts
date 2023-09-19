@@ -5,7 +5,7 @@ import Users from "../models/Users";
 import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import DetalleDispositivo from "../models/DetalleComponents";
-import { error } from "console";
+import { Console, error } from "console";
 
 export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -34,6 +34,9 @@ export const CreateDisp = async (req: Request, res: Response) => {
     const { empresa, sucursal } = req.params;
     const data = req.body;
 
+    console.log("llego")
+    console.log(data)
+
     const EmpresaBySucursal = await Sucursal.findOne({
       where: {
         nombre: sucursal,
@@ -47,35 +50,46 @@ export const CreateDisp = async (req: Request, res: Response) => {
         },
       ],
     });
+
+    if (!EmpresaBySucursal) return res.json({ search: false });
+
+
     const EmpresaSearch: any = await Sucursal.findOne({
       where: {
         nombre: sucursal,
       },
       include: [{ model: Empresa, where: { nombre: empresa } }],
     });
-    if (!EmpresaBySucursal) return res.json({ search: false });
+   
 
     const { Ram_Modulos, Almacenamiento } = data;
-    if (Ram_Modulos && Almacenamiento) {
+    if (Ram_Modulos || Almacenamiento) {
       const DatosProx = {
         Ram_cantidad: Ram_Modulos.length,
         Ram_Modulos: Ram_Modulos,
         Almacenamiento_canti: Almacenamiento.length,
         Almacenamiento_detalle: Almacenamiento,
       };
-      const CreateDisp: any = await Dispositivo.create({
-        ...data,
-        IdSucursal: EmpresaSearch?.id,
-      });
+     
 
-      const CreatComponDisp = await DetalleDispositivo.create({
-        IdDispositivo: CreateDisp.id,
-        ...data,
-        ...DatosProx,
-      });
-      if (CreateDisp && CreatComponDisp) {
-        return res.json({ create: true });
+      if(data?.IdUser == "" || "null"){
+        const CreateDisp: any = await Dispositivo.create({
+          ...data,
+          IdSucursal: EmpresaSearch?.id,
+          IdUser:null
+        });
+        const CreatComponDisp = await DetalleDispositivo.create({
+          IdDispositivo: CreateDisp.id,
+          ...data,
+          ...DatosProx,
+        });
+
+        if (CreateDisp && CreatComponDisp) {
+          return res.json({ create: true });
+        }
       }
+      
+      
     }
 
     const respCreat: any = await Dispositivo.create({
@@ -86,7 +100,9 @@ export const CreateDisp = async (req: Request, res: Response) => {
     return res.json({ create: true });
 
     console.log(CreateDisp);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 };
 export const GetsDispositivos = async (req: Request, res: Response) => {
   try {
@@ -118,12 +134,13 @@ export const UpdateDisp = async (req: Request, res: Response) => {
     const { id } = req.params;
     const DatsNew = req.body;
 
-    const DataDispositivo: any = await Dispositivo.findByPk(id);
-    const DataDetalleDisp: any = await DetalleDispositivo.findOne({
+    const DataDispositivo:any = await Dispositivo.findByPk(id);
+    const DataDetalleDisp:any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: id },
     });
 
-    console.log(DatsNew)
+    console.log(DatsNew);
+
     const CamposUpd: any = {};
     for (const CampUpdate in DatsNew) {
       if (DataDispositivo[CampUpdate] !== DatsNew[CampUpdate]) {
@@ -131,13 +148,12 @@ export const UpdateDisp = async (req: Request, res: Response) => {
       }
     }
 
-    if(DatsNew?.IdUser == "null" ){
-      console.log("funciono")
-        DataDispositivo.update({...CamposUpd,IdUser:null});
-    }else{
-      DataDispositivo.update(CamposUpd);
+    if (!DatsNew.IdUser || DatsNew.IdUser === 'null') {
+      console.log("funcionó");
+      CamposUpd.IdUser = null;
     }
-    
+
+    await DataDispositivo.update(CamposUpd);
 
     const Campos: any = {};
     for (const CampUpdate in DatsNew) {
@@ -145,15 +161,14 @@ export const UpdateDisp = async (req: Request, res: Response) => {
         Campos[CampUpdate] = DatsNew[CampUpdate];
       }
     }
-    DataDetalleDisp.update({
-      ...Campos,
-      Almacenamiento_detalle: Campos["Almacenamiento"],
-    });
-    return res.json({ Campos });
 
+    Campos.Almacenamiento_detalle = Campos.Almacenamiento;
+    await DataDetalleDisp.update(Campos);
+
+    return res.json({ Campos });
   } catch (error) {
     console.log(error);
-    res.json({ error: true, message: "Error al actualizar el dispositivo" });
+    return res.status(500).json({ error: true, message: "Error al actualizar el dispositivo" });
   }
 };
 export const DeleteDisp = async (req: Request, res: Response) => {

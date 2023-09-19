@@ -12,7 +12,6 @@ try {
     // ROLES ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
     Roles.hasMany(Administradores, {
         foreignKey: 'id_rol',
-       
     });
     Administradores.belongsTo(Roles, {
         foreignKey: 'id_rol',
