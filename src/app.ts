@@ -15,17 +15,24 @@ import Sucursales_endpoint from './app/routes/Sucursales.routes';
 import UserRoutes from './app/routes/Users.routes';
 import DispostivoRoutes from './app/routes/Dispositivo.routes';
 import informesRoutes from './app/routes/Informes.routes';
+import TicketsRoutes from './app/routes/Tickets.routes';
+import cookieParser from 'cookie-parser';
+
 app.use(cors({
     origin:'*'
 }))
 app.use(express.json());
+// documentacion for Swagger Ui
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
+// RouteS
 app.use(`${point_defect}/auth/Login`,Login)
 app.use(`${point_defect}/Empresas`,EmpresasRoutes)
 app.use(`${point_defect}/Sucursales`,Sucursales_endpoint)
 app.use(`${point_defect}/Users`,UserRoutes)
 app.use(`${point_defect}/Dispositivos`,DispostivoRoutes)
 app.use(`${point_defect}/Informes`,informesRoutes)
+app.use(`${point_defect}/Tickets`,TicketsRoutes)
 
 
 
@@ -35,7 +42,7 @@ app.listen(puerto,async()=>{
     // alter: true
    // para tener cambios , actualizacion de la bd /
    await sequelize.sync(
-  //  {alter: true}
+    {alter: true}
 );
 
     console.log(`http://localhost:${puerto}/api`)

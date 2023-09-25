@@ -138,7 +138,6 @@ export const UpdateDisp = async (req: Request, res: Response) => {
     const DataDetalleDisp:any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: id },
     });
-
     console.log(DatsNew);
 
     const CamposUpd: any = {};

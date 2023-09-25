@@ -12,26 +12,28 @@ import bcrypt from "bcrypt"
 export const SignIn = async (req: Request, res: Response) => {
     try {
         const { usuario, contraseña } = req.body;
-        const buscar: any = await Administradores.findOne({
+        const buscar:any = await Administradores.findOne({
             where: { usuario: { [Op.eq]: usuario } },
-            include: [{ model: Roles }]
-        },)
-
+            attributes: ['nombre', 'apellido','contraseña'], // Selecciona los atributos que necesitas
+            include: [
+                {
+                    model: Roles,
+                    attributes: ['nombre'], // Selecciona los atributos de Roles que necesitas,
+                }
+            ]
+        });       
         const VerifyPass = await bcrypt.compare(contraseña,buscar.contraseña );
-        console.log(VerifyPass)
-
         if (!buscar || !VerifyPass) { return res.json({ loged: false }) }
         const user = {
             nombre: buscar.nombre,
             apellido: buscar.apellido,
-            usuario: buscar.usuario,
             rol: buscar.Role.nombre
         }
         const token_user = jwt.sign({ buscar }, process.env.SECRET_KEY_JWT || '')
         return res.json({ loged: true, token_user, user })
 
     } catch (error) {
-        res.json({ error: true, msg: error })
+        res.json({ error: true, msg: 'Error En el servidor, comuniquese con el Administrador' })
     }
 }
 export const CreateUsuario = async (req: Request, res: Response) => {
