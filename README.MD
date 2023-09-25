@@ -52,3 +52,14 @@ AL MOMENTO DE HACER UNA ACTUALIZACION DEL SERVICIO - ESTARA CREANDO UN NUEVO INF
     accion : ( mencionar que se hizo y todo ello );
     observacion : ( el soporte menciona que es lo que porque cambio y todo ello )
 }
+
+// create a new Ticket 
+--- body ---
+
+Titulo : string ,
+UsuarioId: { id del backend },
+Estado: string (Abierto,En progreso,Cerrado,Cancelado)
+Fecha : {fecha del backend },
+Observacion : string ,
+Sucursal: number { sucursal id} ,
+PcId : number {PC id }

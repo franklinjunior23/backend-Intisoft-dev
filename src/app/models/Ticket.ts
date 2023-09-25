@@ -19,6 +19,9 @@ const Tikets = sequelize.define('tikets', {
     Fecha:{
         type: DataType.STRING,
     },
+    Hora:{
+        type : DataType.STRING,
+    },
     Observacion:{
         type: DataType.STRING,
     },

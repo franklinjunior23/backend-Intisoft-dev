@@ -14,7 +14,7 @@ export const SignIn = async (req: Request, res: Response) => {
         const { usuario, contraseña } = req.body;
         const buscar:any = await Administradores.findOne({
             where: { usuario: { [Op.eq]: usuario } },
-            attributes: ['nombre', 'apellido','contraseña'], // Selecciona los atributos que necesitas
+            attributes: ['nombre', 'apellido','contraseña','id'], // Selecciona los atributos que necesitas
             include: [
                 {
                     model: Roles,
@@ -29,7 +29,7 @@ export const SignIn = async (req: Request, res: Response) => {
             apellido: buscar.apellido,
             rol: buscar.Role.nombre
         }
-        const token_user = jwt.sign({ buscar }, process.env.SECRET_KEY_JWT || '')
+        const token_user = jwt.sign({ datos:buscar }, process.env.SECRET_KEY_JWT || '')
         return res.json({ loged: true, token_user, user })
 
     } catch (error) {
