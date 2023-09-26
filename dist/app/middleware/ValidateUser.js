@@ -22,6 +22,8 @@ function ValidateUser(req, res, next) {
             return res.status(401).json({ message: "Token not provided" });
         try {
             const Decoded = yield jsonwebtoken_1.default.verify(tokenUser, process.env.SECRET_KEY_JWT || "");
+            if (Decoded.datos.Role.nombre === "Cliente")
+                return res.status(403).json({ message: "Access forbidden" });
             // Asignar los datos del usuario decodificado al objeto req.user
             req.User = Object.assign({}, Decoded === null || Decoded === void 0 ? void 0 : Decoded.datos);
             // Continuar con la ejecución de la solicitud

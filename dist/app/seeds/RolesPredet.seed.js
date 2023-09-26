@@ -12,21 +12,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Execute_roles = void 0;
+exports.ExecuteRoles = void 0;
 const Roles_1 = __importDefault(require("../models/Roles"));
-const roles_predete = [
+const roles_predeterminados = [
     { nombre: "Administrador" },
     { nombre: "Soporte" },
     { nombre: "Cliente" }
 ];
-const Execute_roles = () => __awaiter(void 0, void 0, void 0, function* () {
+const ExecuteRoles = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        for (const core of roles_predete) {
-            yield Roles_1.default.create(core);
+        // Verifica cuántos registros coinciden con los nombres de roles predeterminados.
+        const { count } = yield Roles_1.default.findAndCountAll({
+            where: {
+                nombre: roles_predeterminados.map((role) => role.nombre)
+            }
+        });
+        // Si count es igual al número de roles predeterminados, ya existen en la base de datos.
+        if (count === roles_predeterminados.length) {
+            console.log("Los roles predeterminados ya existen en la base de datos.");
+        }
+        else {
+            // Crea los roles que no existen en la base de datos.
+            for (const core of roles_predeterminados) {
+                yield Roles_1.default.create(core);
+            }
+            console.log("Se crearon los roles predeterminados.");
         }
     }
     catch (error) {
-        console.log("salio mal en la creacion de roles predeterminados");
+        console.log("Ocurrió un error en la creación de roles predeterminados:", error);
     }
 });
-exports.Execute_roles = Execute_roles;
+exports.ExecuteRoles = ExecuteRoles;
