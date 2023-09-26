@@ -37,7 +37,7 @@ app.use(`${point_defect}/Tickets`,TicketsRoutes)
 
 
 app.listen(puerto,async()=>{
-   // Execute_roles() // ejecucion de la creacion de los roles por predeterminado
+   Execute_roles() // ejecucion de la creacion de los roles por predeterminado
     // force: true 
     // alter: true
    // para tener cambios , actualizacion de la bd /

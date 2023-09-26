@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateUserById = exports.DeleteUserById = exports.GetUserById = exports.CreateUserBySucursal = exports.GetUsersByEmpresaAndSucursal = void 0;
+exports.GetsUserDisp = exports.UpdateUserById = exports.DeleteUserById = exports.GetUserById = exports.CreateUserBySucursal = exports.GetUsersByEmpresaAndSucursal = void 0;
 const sequelize_1 = require("sequelize");
 const Empresa_1 = __importDefault(require("../models/Empresa"));
 const Sucursales_1 = __importDefault(require("../models/Sucursales"));
@@ -26,24 +26,22 @@ const GetUsersByEmpresaAndSucursal = (req, res) => __awaiter(void 0, void 0, voi
                 {
                     model: Sucursales_1.default,
                     where: {
-                        nombre: { [sequelize_1.Op.eq]: sucursal }
+                        nombre: { [sequelize_1.Op.eq]: sucursal },
                     },
                     include: [
                         {
                             model: Empresa_1.default,
                             where: {
-                                nombre: { [sequelize_1.Op.eq]: empresa }
-                            }
-                        }
-                    ]
+                                nombre: { [sequelize_1.Op.eq]: empresa },
+                            },
+                        },
+                    ],
                 },
                 {
-                    model: Dispositvo_1.default
-                }
-            ]
+                    model: Dispositvo_1.default,
+                },
+            ],
         });
-        if (UserData.length === 0)
-            return res.json(UserData);
         return res.json(UserData);
     }
     catch (error) {
@@ -54,22 +52,21 @@ exports.GetUsersByEmpresaAndSucursal = GetUsersByEmpresaAndSucursal;
 const CreateUserBySucursal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { empresa, sucursal } = req.params;
-        console.log(empresa, sucursal);
         const datoUser = req.body;
         const resSuc = yield Sucursales_1.default.findOne({
             where: {
                 nombre: {
-                    [sequelize_1.Op.eq]: sucursal
-                }
+                    [sequelize_1.Op.eq]: sucursal,
+                },
             },
             include: [
                 {
                     model: Empresa_1.default,
                     where: {
-                        nombre: { [sequelize_1.Op.eq]: empresa }
-                    }
-                }
-            ]
+                        nombre: { [sequelize_1.Op.eq]: empresa },
+                    },
+                },
+            ],
         });
         if (resSuc) {
             const CreateUser = yield Users_1.default.create(Object.assign(Object.assign({}, datoUser), { IdSucursal: resSuc === null || resSuc === void 0 ? void 0 : resSuc.id }));
@@ -77,8 +74,7 @@ const CreateUserBySucursal = (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
         return res.json({ create: false });
     }
-    catch (error) {
-    }
+    catch (error) { }
 });
 exports.CreateUserBySucursal = CreateUserBySucursal;
 const GetUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -86,13 +82,13 @@ const GetUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const resp = yield Users_1.default.findOne({
             where: {
-                id
+                id,
             },
             include: [
                 {
-                    model: Dispositvo_1.default
-                }
-            ]
+                    model: Dispositvo_1.default,
+                },
+            ],
         });
         if (!resp)
             return res.json({ where: false });
@@ -107,27 +103,72 @@ const DeleteUserById = (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const { id } = req.params;
         const Exist = yield Users_1.default.findOne({
-            where: { id }
+            where: { id },
         });
-        if (!Exist)
-            return res.json({ search: false });
-        res.json({ search: true, data: Exist });
+        console.log(id);
+        if (Exist) {
+            yield Users_1.default.destroy({
+                where: {
+                    id,
+                },
+            });
+            return res.json({ search: true });
+        }
+        res.json({ search: false });
     }
     catch (error) {
+        console.log(error);
     }
 });
 exports.DeleteUserById = DeleteUserById;
 const UpdateUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const Exist = yield Users_1.default.findOne({
-            where: { id }
-        });
+        const NewDatos = req.body;
+        const Exist = yield Users_1.default.findByPk(id);
+        const cambios = {};
         if (!Exist)
             return res.json({ search: false });
-        res.json({ search: true, data: Exist });
+        for (const CamposUpdate in NewDatos) {
+            if (Exist[CamposUpdate] !== NewDatos[CamposUpdate]) {
+                cambios[CamposUpdate] = NewDatos[CamposUpdate];
+            }
+        }
+        yield Exist.update(cambios);
+        res.json({ search: true, data: Exist, cambios });
     }
-    catch (error) {
-    }
+    catch (error) { }
 });
 exports.UpdateUserById = UpdateUserById;
+const GetsUserDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { empresa, sucursal } = req.query;
+        console.log("llego");
+        const resp = yield Users_1.default.findAll({
+            include: [
+                {
+                    model: Sucursales_1.default,
+                    where: {
+                        nombre: sucursal,
+                    },
+                    include: [
+                        {
+                            model: Empresa_1.default,
+                            where: {
+                                nombre: empresa,
+                            },
+                        },
+                    ],
+                },
+                {
+                    model: Dispositvo_1.default
+                }
+            ],
+        });
+        res.json(resp);
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.GetsUserDisp = GetsUserDisp;

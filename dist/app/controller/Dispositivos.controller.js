@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteDisp = exports.UpdateDisp = exports.GetsDispositivos = exports.CreateDisp = exports.GetPcYLap = void 0;
+exports.GetsDispUsingUser = exports.GetsDispositivo = exports.DeleteDisp = exports.UpdateDisp = exports.GetsDispositivos = exports.CreateDisp = exports.GetPcYLap = void 0;
 const sequelize_1 = require("sequelize");
 const Dispositvo_1 = __importDefault(require("../models/Dispositvo"));
 const Users_1 = __importDefault(require("../models/Users"));
@@ -46,6 +46,8 @@ const CreateDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const { empresa, sucursal } = req.params;
         const data = req.body;
+        console.log("llego");
+        console.log(data);
         const EmpresaBySucursal = yield Sucursales_1.default.findOne({
             where: {
                 nombre: sucursal,
@@ -61,21 +63,54 @@ const CreateDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
         if (!EmpresaBySucursal)
             return res.json({ search: false });
-        const CreateDisp = yield Dispositvo_1.default.create(data);
-        const CreatComponDisp = yield DetalleComponents_1.default.create(Object.assign({ IdDispositivo: CreateDisp.id }, data));
-        if (CreateDisp && CreatComponDisp) {
-            return res.json({ create: true });
+        const EmpresaSearch = yield Sucursales_1.default.findOne({
+            where: {
+                nombre: sucursal,
+            },
+            include: [{ model: Empresa_1.default, where: { nombre: empresa } }],
+        });
+        const { Ram_Modulos, Almacenamiento } = data;
+        if (Ram_Modulos || Almacenamiento) {
+            const DatosProx = {
+                Ram_cantidad: Ram_Modulos.length,
+                Ram_Modulos: Ram_Modulos,
+                Almacenamiento_canti: Almacenamiento.length,
+                Almacenamiento_detalle: Almacenamiento,
+            };
+            if ((data === null || data === void 0 ? void 0 : data.IdUser) == "" || "null") {
+                const CreateDisp = yield Dispositvo_1.default.create(Object.assign(Object.assign({}, data), { IdSucursal: EmpresaSearch === null || EmpresaSearch === void 0 ? void 0 : EmpresaSearch.id, IdUser: null }));
+                const CreatComponDisp = yield DetalleComponents_1.default.create(Object.assign(Object.assign({ IdDispositivo: CreateDisp.id }, data), DatosProx));
+                if (CreateDisp && CreatComponDisp) {
+                    return res.json({ create: true });
+                }
+            }
         }
+        const respCreat = yield Dispositvo_1.default.create(Object.assign(Object.assign({}, data), { IdSucursal: EmpresaSearch === null || EmpresaSearch === void 0 ? void 0 : EmpresaSearch.id }));
+        yield DetalleComponents_1.default.create(Object.assign(Object.assign({}, data), { IdDispositivo: respCreat === null || respCreat === void 0 ? void 0 : respCreat.id }));
+        return res.json({ create: true });
+        console.log(exports.CreateDisp);
     }
-    catch (error) { }
+    catch (error) {
+        console.log(error);
+    }
 });
 exports.CreateDisp = CreateDisp;
 const GetsDispositivos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { empresa, sucursal } = req.query;
+        if (empresa && sucursal == undefined) {
+            throw new Error("Error Parametros");
+        }
+        console.log(empresa, sucursal);
         const Busq = yield Dispositvo_1.default.findAll({
             include: [
                 {
                     model: DetalleComponents_1.default,
+                },
+                {
+                    model: Sucursales_1.default,
+                    where: { nombre: sucursal },
+                    include: [{ model: Empresa_1.default, where: { nombre: empresa } }],
                 },
             ],
         });
@@ -90,22 +125,35 @@ const UpdateDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const { id } = req.params;
         const DatsNew = req.body;
-        const DataOld = yield Dispositvo_1.default.findOne({
-            where: {
-                id,
-            },
-            include: [
-                {
-                    model: DetalleComponents_1.default,
-                },
-            ],
+        const DataDispositivo = yield Dispositvo_1.default.findByPk(id);
+        const DataDetalleDisp = yield DetalleComponents_1.default.findOne({
+            where: { IdDispositivo: id },
         });
-        if (!DataOld)
-            return res.json({ error: true, search: false });
-        return res.json(DataOld);
+        console.log(DatsNew);
+        const CamposUpd = {};
+        for (const CampUpdate in DatsNew) {
+            if (DataDispositivo[CampUpdate] !== DatsNew[CampUpdate]) {
+                CamposUpd[CampUpdate] = DatsNew[CampUpdate];
+            }
+        }
+        if (!DatsNew.IdUser || DatsNew.IdUser === 'null') {
+            console.log("funcionó");
+            CamposUpd.IdUser = null;
+        }
+        yield DataDispositivo.update(CamposUpd);
+        const Campos = {};
+        for (const CampUpdate in DatsNew) {
+            if (DataDetalleDisp[CampUpdate] !== DatsNew[CampUpdate]) {
+                Campos[CampUpdate] = DatsNew[CampUpdate];
+            }
+        }
+        Campos.Almacenamiento_detalle = Campos.Almacenamiento;
+        yield DataDetalleDisp.update(Campos);
+        return res.json({ Campos });
     }
     catch (error) {
-        res.json({ error: true, UpdateDisp: exports.UpdateDisp });
+        console.log(error);
+        return res.status(500).json({ error: true, message: "Error al actualizar el dispositivo" });
     }
 });
 exports.UpdateDisp = UpdateDisp;
@@ -130,3 +178,51 @@ const DeleteDisp = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.DeleteDisp = DeleteDisp;
+const GetsDispositivo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        console.log(id);
+        const Exist = yield Dispositvo_1.default.findOne({
+            where: {
+                id,
+            },
+            include: [{ model: DetalleComponents_1.default }, { model: Users_1.default }],
+        });
+        return res.json({ data: Exist });
+    }
+    catch (error) { }
+});
+exports.GetsDispositivo = GetsDispositivo;
+const GetsDispUsingUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = req.query;
+        console.log(data);
+        const { empresa, sucursal } = req.query;
+        const resp = yield Dispositvo_1.default.findAll({
+            include: [
+                {
+                    model: Sucursales_1.default,
+                    where: {
+                        nombre: sucursal,
+                    },
+                    include: [
+                        {
+                            model: Empresa_1.default,
+                            where: {
+                                nombre: empresa,
+                            },
+                        },
+                    ],
+                },
+                {
+                    model: Users_1.default,
+                },
+            ],
+        });
+        res.json(resp);
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+exports.GetsDispUsingUser = GetsDispUsingUser;

@@ -11,78 +11,112 @@ const Empresa_1 = __importDefault(require("./Empresa"));
 const Informes_1 = __importDefault(require("./Informes"));
 const Roles_1 = __importDefault(require("./Roles"));
 const Sucursales_1 = __importDefault(require("./Sucursales"));
+const Ticket_1 = __importDefault(require("./Ticket"));
 const Users_1 = __importDefault(require("./Users"));
 try {
     // ROLES ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
     Roles_1.default.hasMany(Administradores_1.default, {
-        foreignKey: 'id_rol',
+        foreignKey: "id_rol",
     });
     Administradores_1.default.belongsTo(Roles_1.default, {
-        foreignKey: 'id_rol',
-        targetKey: 'id',
+        foreignKey: "id_rol",
+        targetKey: "id",
     });
     // EMPRESA ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
     Empresa_1.default.hasMany(Sucursales_1.default, {
-        foreignKey: 'id_empresa',
+        foreignKey: "id_empresa",
     });
     Sucursales_1.default.belongsTo(Empresa_1.default, {
-        foreignKey: 'id_empresa',
-        targetKey: 'id',
+        foreignKey: "id_empresa",
+        targetKey: "id",
     });
     // USERS ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
     Sucursales_1.default.hasMany(Users_1.default, {
-        foreignKey: 'IdSucursal',
+        foreignKey: "IdSucursal",
     });
     Users_1.default.belongsTo(Sucursales_1.default, {
-        foreignKey: 'IdSucursal',
-        targetKey: 'id',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL'
+        foreignKey: "IdSucursal",
+        targetKey: "id",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
     });
     // Dispositivo ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
     Sucursales_1.default.hasMany(Dispositvo_1.default, {
-        foreignKey: 'IdSucursal',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL' // Establecerá a NULL si se elimina la Sucursal
+        foreignKey: "IdSucursal",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL", // Establecerá a NULL si se elimina la Sucursal
     });
     Dispositvo_1.default.belongsTo(Sucursales_1.default, {
-        foreignKey: 'IdSucursal',
-        targetKey: 'id',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL' // Establecerá a NULL si se elimina la Sucursal
+        foreignKey: "IdSucursal",
+        targetKey: "id",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL", // Establecerá a NULL si se elimina la Sucursal
     });
     Users_1.default.hasOne(Dispositvo_1.default, {
-        foreignKey: 'IdUser',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL' // Establecerá a NULL si se elimina la Sucursal
+        foreignKey: "IdUser",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL", // Establecerá a NULL si se elimina la Sucursal
     });
     Dispositvo_1.default.belongsTo(Users_1.default, {
-        foreignKey: 'IdUser',
-        targetKey: 'id',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL'
+        foreignKey: "IdUser",
+        targetKey: "id",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
     });
     Dispositvo_1.default.hasMany(DetalleComponents_1.default, {
-        foreignKey: 'IdDispositivo',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL' // Establecerá a NULL si se elimina la Sucursal
+        foreignKey: "IdDispositivo",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE", // Establecerá a NULL si se elimina la Sucursal
     });
     DetalleComponents_1.default.belongsTo(Dispositvo_1.default, {
-        foreignKey: 'IdDispositivo',
-        targetKey: 'id',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL' // Establecerá a NULL si se elimina la Sucursal
+        foreignKey: "IdDispositivo",
+        targetKey: "id",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE", // Establecerá a NULL si se elimina la Sucursal
     });
     Dispositvo_1.default.hasMany(Informes_1.default, {
-        foreignKey: 'IdDispositivo',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL'
+        foreignKey: "IdDispositivo",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
     });
     Informes_1.default.belongsTo(Dispositvo_1.default, {
-        foreignKey: 'IdDispositivo',
-        targetKey: 'id',
-        onUpdate: 'SET NULL',
-        onDelete: 'SET NULL'
+        foreignKey: "IdDispositivo",
+        targetKey: "id",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
+    });
+    Administradores_1.default.hasOne(Ticket_1.default, {
+        foreignKey: "UsuarioId",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
+    });
+    Ticket_1.default.belongsTo(Administradores_1.default, {
+        foreignKey: "UsuarioId",
+        targetKey: "id",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
+    });
+    Sucursales_1.default.hasOne(Ticket_1.default, {
+        foreignKey: "SucursalId",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
+    });
+    Ticket_1.default.belongsTo(Sucursales_1.default, {
+        foreignKey: "SucursalId",
+        targetKey: "id",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
+    });
+    Dispositvo_1.default.hasOne(Ticket_1.default, {
+        foreignKey: "PcId",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
+    });
+    Ticket_1.default.belongsTo(Dispositvo_1.default, {
+        foreignKey: "PcId",
+        targetKey: "id",
+        onUpdate: "SET NULL",
+        onDelete: "SET NULL",
     });
 }
 catch (error) {

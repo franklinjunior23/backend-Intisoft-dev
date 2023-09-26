@@ -24,24 +24,28 @@ const SignIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { usuario, contraseña } = req.body;
         const buscar = yield Administradores_1.default.findOne({
             where: { usuario: { [sequelize_1.Op.eq]: usuario } },
-            include: [{ model: Roles_1.default }]
+            attributes: ['nombre', 'apellido', 'contraseña', 'id'],
+            include: [
+                {
+                    model: Roles_1.default,
+                    attributes: ['nombre'], // Selecciona los atributos de Roles que necesitas,
+                }
+            ]
         });
         const VerifyPass = yield bcrypt_1.default.compare(contraseña, buscar.contraseña);
-        console.log(VerifyPass);
         if (!buscar || !VerifyPass) {
             return res.json({ loged: false });
         }
         const user = {
             nombre: buscar.nombre,
             apellido: buscar.apellido,
-            usuario: buscar.usuario,
             rol: buscar.Role.nombre
         };
-        const token_user = jsonwebtoken_1.default.sign({ buscar }, process.env.SECRET_KEY_JWT || '');
+        const token_user = jsonwebtoken_1.default.sign({ datos: buscar }, process.env.SECRET_KEY_JWT || '');
         return res.json({ loged: true, token_user, user });
     }
     catch (error) {
-        res.json({ error: true, msg: error });
+        res.json({ error: true, msg: 'Error En el servidor, comuniquese con el Administrador' });
     }
 });
 exports.SignIn = SignIn;

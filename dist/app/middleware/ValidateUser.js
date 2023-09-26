@@ -12,24 +12,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ValidateAdminToken = void 0;
+exports.ValidateUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 require("dotenv/config");
-function ValidateAdminToken(req, res, next) {
+function ValidateUser(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const tokenUser = req.header(String(process.env.VALIDATION_HEADER));
         if (!tokenUser)
             return res.status(401).json({ message: "Token not provided" });
         try {
             const Decoded = yield jsonwebtoken_1.default.verify(tokenUser, process.env.SECRET_KEY_JWT || "");
-            if (Decoded.datos.Role.nombre === "Administrador")
-                return next();
-            throw new Error("Invalid credentials required");
+            // Asignar los datos del usuario decodificado al objeto req.user
+            req.User = Object.assign({}, Decoded === null || Decoded === void 0 ? void 0 : Decoded.datos);
+            // Continuar con la ejecución de la solicitud
+            next();
         }
         catch (error) {
             console.log(error);
-            return res.status(401).json({ message: "Acceso denegado. No tienes el rol requerido para esta acción." });
+            return res.status(401).json({ message: "Invalid token" });
         }
     });
 }
-exports.ValidateAdminToken = ValidateAdminToken;
+exports.ValidateUser = ValidateUser;

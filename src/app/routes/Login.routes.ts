@@ -3,7 +3,7 @@ import { CreateUsuario, GetUsuariosAuth, SignIn } from "../controller/Login.cont
 import { ValidateAdminToken } from "../middleware/Admin.auth";
 const Login = Router()
 Login.post('/',SignIn);
-Login.post('/create',ValidateAdminToken,CreateUsuario)
+Login.post('/create',CreateUsuario)
 Login.get('/userAuth',ValidateAdminToken,GetUsuariosAuth)
 
 

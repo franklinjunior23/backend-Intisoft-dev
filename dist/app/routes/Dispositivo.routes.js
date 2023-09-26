@@ -4,6 +4,8 @@ const Dispositivos_controller_1 = require("../controller/Dispositivos.controller
 const express_1 = require("express");
 const DispostivoRoutes = (0, express_1.Router)();
 DispostivoRoutes.get('/', Dispositivos_controller_1.GetsDispositivos);
+DispostivoRoutes.get('/Users', Dispositivos_controller_1.GetsDispUsingUser);
+DispostivoRoutes.get('/:id', Dispositivos_controller_1.GetsDispositivo);
 DispostivoRoutes.get('/PCLAP', Dispositivos_controller_1.GetPcYLap);
 DispostivoRoutes.post('/:empresa/:sucursal', Dispositivos_controller_1.CreateDisp);
 DispostivoRoutes.put('/:id', Dispositivos_controller_1.UpdateDisp);

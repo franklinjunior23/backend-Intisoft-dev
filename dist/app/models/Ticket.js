@@ -2,41 +2,39 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("../config/database");
 const sequelize_typescript_1 = require("sequelize-typescript");
-const Dispositivo = database_1.sequelize.define("Dispositivo", {
+const uuid_1 = require("uuid");
+const Tikets = database_1.sequelize.define('tikets', {
     id: {
-        type: sequelize_typescript_1.DataType.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+        type: sequelize_typescript_1.DataType.STRING,
+        defaultValue: uuid_1.v4,
+        primaryKey: true
     },
-    nombre: {
+    Titulo: {
         type: sequelize_typescript_1.DataType.STRING,
     },
-    tipo: {
-        type: sequelize_typescript_1.DataType.STRING,
-    },
-    tipo_Disp: {
-        type: sequelize_typescript_1.DataType.STRING
-    },
-    marca: {
-        type: sequelize_typescript_1.DataType.STRING,
-    },
-    modelo: {
-        type: sequelize_typescript_1.DataType.STRING,
-    },
-    serie: {
-        type: sequelize_typescript_1.DataType.STRING,
-    },
-    tipo_con: {
-        type: sequelize_typescript_1.DataType.STRING,
-    },
-    estado: {
-        type: sequelize_typescript_1.DataType.STRING,
-    },
-    IdSucursal: {
+    UsuarioId: {
         type: sequelize_typescript_1.DataType.INTEGER,
     },
-    IdUser: {
+    Estado: {
+        type: sequelize_typescript_1.DataType.STRING,
+    },
+    Fecha: {
+        type: sequelize_typescript_1.DataType.STRING,
+    },
+    Hora: {
+        type: sequelize_typescript_1.DataType.STRING,
+    },
+    Observacion: {
+        type: sequelize_typescript_1.DataType.STRING,
+    },
+    SucursalId: {
         type: sequelize_typescript_1.DataType.INTEGER,
     },
+    Comentario: {
+        type: sequelize_typescript_1.DataType.JSON,
+    },
+    PcId: {
+        type: sequelize_typescript_1.DataType.INTEGER,
+    }
 });
-exports.default = Dispositivo;
+exports.default = Tikets;

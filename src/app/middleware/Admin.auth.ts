@@ -16,7 +16,7 @@ export async function ValidateAdminToken(
       tokenUser,
       process.env.SECRET_KEY_JWT || ""
     );
-    if (Decoded.buscar.Role.nombre === "Administrador") return next();
+    if (Decoded.datos.Role.nombre === "Administrador") return next();
     throw new Error("Invalid credentials required");
   } catch (error) {
     console.log(error);
