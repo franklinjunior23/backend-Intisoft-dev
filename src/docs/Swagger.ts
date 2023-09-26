@@ -16,6 +16,19 @@ const options: swaggerJsdoc.Options = {
         url: "https://otro-servidor.com/api/v1", // Puedes agregar más servidores si es necesario
       },
     ],
+    tags: [
+      {
+        name: "Empresas",
+        description:
+          "Este endpoint te brinda la posibilidad de consultar información relacionada con empresas ya existentes, así como también te permite crear nuevas empresas. Con esta funcionalidad, podrás acceder a datos relevantes sobre empresas establecidas y también tendrás la capacidad de generar nuevas entidades empresariales.",
+          externalDocs:{
+            url:'/empresas'
+          }
+      },
+    ],
+    
+    
+    
   },
   // Especifica la ubicación de los archivos que contienen las rutas y los comentarios JSDoc.
   apis: ["../app/routes/*.ts"], // Ajusta la ruta según tu estructura de archivos.
