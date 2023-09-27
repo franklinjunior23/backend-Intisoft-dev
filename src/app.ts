@@ -43,7 +43,7 @@ app.listen(puerto, async () => {
   // force: true
   // alter: true
   // para tener cambios , actualizacion de la bd /
-  await sequelize.sync({ alter: true });
+  await sequelize.sync(/*{ alter: true }*/);
 
   console.log(`http://localhost:${puerto}/api`);
 });
