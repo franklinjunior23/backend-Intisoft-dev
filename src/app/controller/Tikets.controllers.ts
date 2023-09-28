@@ -3,19 +3,17 @@ import Tikets from "../models/Ticket";
 import { Request, Response } from "express";
 import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
-
 import { FechaActually } from "../utils/DateFecha";
+
 
 export async function GetAllTickets(req: Request, res: Response) {
   try {
-
-
-    function contarTicketsCerrados(tickets:any,estado:string):Number {
-      const ticketsCerrados = tickets.filter((ticket:any) => ticket.Estado === estado);
+    function contarTicketsCerrados(tickets: any, estado: string): Number {
+      const ticketsCerrados = tickets.filter(
+        (ticket: any) => ticket.Estado === estado
+      );
       return ticketsCerrados.length;
     }
-
-
     const { Fecha } = FechaActually();
 
     const Empresas = await Empresa.findAll({
@@ -24,7 +22,6 @@ export async function GetAllTickets(req: Request, res: Response) {
     });
 
     const Ticke = await Tikets.findAll({
-     
       where: {
         Fecha: Fecha,
       },
@@ -39,7 +36,7 @@ export async function GetAllTickets(req: Request, res: Response) {
           include: [{ model: Empresa, attributes: ["nombre"] }],
         },
       ],
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
     });
     const TicketsAll = await Tikets.findAll({
       include: [
@@ -53,14 +50,14 @@ export async function GetAllTickets(req: Request, res: Response) {
           include: [{ model: Empresa, attributes: ["nombre"] }],
         },
       ],
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
     });
     return res.json({
       Details: {
         cantidad: Ticke.length,
         fecha: Fecha,
-        cerrado:contarTicketsCerrados(Ticke,'Cerrado'),
-        abierto:contarTicketsCerrados(Ticke,'Abierto'),
+        cerrado: contarTicketsCerrados(Ticke, "Cerrado"),
+        abierto: contarTicketsCerrados(Ticke, "Abierto"),
       },
       tickets: Ticke,
       Empresas,

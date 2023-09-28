@@ -27,10 +27,7 @@ export const CreateBaseConocimiento = async (req: any, res: Response) => {
         })
     };
     return res.json({create:false, message: "No se creo correctamente"});
-
-
-   
   } catch (error) {
-    return res.status(401).json({ error, mesage: "Error en el servidor" });
+    return res.json({ create:false, message: "Error en el servidor" });
   }
 };

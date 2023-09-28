@@ -15,6 +15,9 @@ const Administradores = sequelize.define('Administradores',{
         type:DataType.STRING,
         allowNull:false
     },
+    correo:{
+        type:DataType.STRING
+    },
     usuario:{
         type:DataType.STRING,
         allowNull:false
