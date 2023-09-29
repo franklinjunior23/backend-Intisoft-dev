@@ -24,11 +24,3 @@ export function CreateEmailConexion() {
   return transporter;
 }
 
-const transporter = CreateEmailConexion();
-const mailOptions = {
-  from: "Franxx <SoportSoft@dev.softintis.com>", // Tu dirección de correo electrónico
-  to: "jhonathan.chaname@iestpmonfortianos.edu.pe", // Dirección de correo electrónico del destinatario
-  subject: "Prueba",
-  text: "LLego el mensaje de email sendmail",
-};
-await transporter.sendMail(mailOptions);

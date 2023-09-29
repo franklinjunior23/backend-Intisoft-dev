@@ -17,6 +17,7 @@ import DispostivoRoutes from "./app/routes/Dispositivo.routes";
 import informesRoutes from "./app/routes/Informes.routes";
 import TicketsRoutes from "./app/routes/Tickets.routes";
 import BaseConocimientos from "./app/routes/BaseConocimientos.routes";
+import { ExecuteUserCreateDefect } from "./app/seeds/UserDefect";
 
 app.use(
   cors({
@@ -40,6 +41,8 @@ app.use(`${point_defect}/BaseConocimiento`, BaseConocimientos);
 
 app.listen(puerto, async () => {
     ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
+    ExecuteUserCreateDefect()
+    
   // force: true
   // alter: true
   // para tener cambios , actualizacion de la bd /
