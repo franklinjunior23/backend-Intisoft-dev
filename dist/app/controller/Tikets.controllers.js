@@ -45,7 +45,7 @@ function GetAllTickets(req, res) {
                         include: [{ model: Empresa_1.default, attributes: ["nombre"] }],
                     },
                 ],
-                order: [['createdAt', 'DESC']],
+                order: [["createdAt", "DESC"]],
             });
             const TicketsAll = yield Ticket_1.default.findAll({
                 include: [
@@ -59,14 +59,14 @@ function GetAllTickets(req, res) {
                         include: [{ model: Empresa_1.default, attributes: ["nombre"] }],
                     },
                 ],
-                order: [['createdAt', 'DESC']],
+                order: [["createdAt", "DESC"]],
             });
             return res.json({
                 Details: {
                     cantidad: Ticke.length,
                     fecha: Fecha,
-                    cerrado: contarTicketsCerrados(Ticke, 'Cerrado'),
-                    abierto: contarTicketsCerrados(Ticke, 'Abierto'),
+                    cerrado: contarTicketsCerrados(Ticke, "Cerrado"),
+                    abierto: contarTicketsCerrados(Ticke, "Abierto"),
                 },
                 tickets: Ticke,
                 Empresas,

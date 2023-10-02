@@ -12,15 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateBaseConocimiento = exports.GetBaseConocimientos = void 0;
+exports.UpdateById = exports.CreateBaseConocimiento = exports.GetBaseConocimientos = void 0;
+const DateFecha_1 = require("../utils/DateFecha");
 const SuportDocs_1 = __importDefault(require("../models/SuportDocs"));
 const GetBaseConocimientos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield SuportDocs_1.default.findAll({ order: [["createdAt", "DESC"]] });
+        const data = yield SuportDocs_1.default.findAll({
+            order: [["createdAt", "DESC"]],
+        });
         const Details = {
             cantidad: data.length,
+            create: (0, DateFecha_1.ActualyDats)(data),
         };
-        return res.json({ Details: Details, data });
+        return res.json({ details: Details, data });
     }
     catch (error) {
         return res.status(401).json({ error, mesage: "Error en el servidor" });
@@ -35,14 +39,32 @@ const CreateBaseConocimiento = (req, res) => __awaiter(void 0, void 0, void 0, f
         if (data) {
             return res.status(200).json({
                 message: "Se creo correctamente",
-                create: true
+                create: true,
             });
         }
-        ;
         return res.json({ create: false, message: "No se creo correctamente" });
     }
     catch (error) {
-        return res.status(401).json({ error, mesage: "Error en el servidor" });
+        return res.json({ create: false, message: "Error en el servidor" });
     }
 });
 exports.CreateBaseConocimiento = CreateBaseConocimiento;
+const UpdateById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const IDDOCSBS = req.params.id;
+    const Data = req.body;
+    try {
+        if ((Data === null || Data === void 0 ? void 0 : Data.Contenido) == null || '')
+            return res.json({ update: false, message: "Falta datos" });
+        const DocOld = yield SuportDocs_1.default.update({ Contenido: Data === null || Data === void 0 ? void 0 : Data.Contenido }, {
+            where: { id: IDDOCSBS },
+        });
+        console.log(DocOld);
+        if (DocOld)
+            return res.json({ update: true, message: `Se actualizo correctamente ` });
+        return res.json({ update: false, message: "No se actualizo correctamente" });
+    }
+    catch (error) {
+        res.json({ update: false, error: true, message: 'Hubo un error , intente nuevamente' });
+    }
+});
+exports.UpdateById = UpdateById;

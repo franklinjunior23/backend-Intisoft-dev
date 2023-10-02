@@ -24,5 +24,8 @@ const SuportDocs = database_1.sequelize.define('suportDocs', {
     Autor: {
         type: sequelize_typescript_1.DataType.STRING,
     },
+    Calificacion: {
+        type: sequelize_typescript_1.DataType.INTEGER,
+    },
 });
 exports.default = SuportDocs;

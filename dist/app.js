@@ -31,6 +31,7 @@ const Dispositivo_routes_1 = __importDefault(require("./app/routes/Dispositivo.r
 const Informes_routes_1 = __importDefault(require("./app/routes/Informes.routes"));
 const Tickets_routes_1 = __importDefault(require("./app/routes/Tickets.routes"));
 const BaseConocimientos_routes_1 = __importDefault(require("./app/routes/BaseConocimientos.routes"));
+const UserDefect_1 = require("./app/seeds/UserDefect");
 app.use((0, cors_1.default)({
     origin: "*",
 }));
@@ -48,9 +49,10 @@ app.use(`${point_defect}/Tickets`, Tickets_routes_1.default);
 app.use(`${point_defect}/BaseConocimiento`, BaseConocimientos_routes_1.default);
 app.listen(puerto, () => __awaiter(void 0, void 0, void 0, function* () {
     (0, RolesPredet_seed_1.ExecuteRoles)(); // ejecucion de la creacion de los roles por predeterminado
+    (0, UserDefect_1.ExecuteUserCreateDefect)();
     // force: true
     // alter: true
     // para tener cambios , actualizacion de la bd /
-    yield database_1.sequelize.sync({ alter: true });
+    yield database_1.sequelize.sync( /*{ alter: true }*/);
     console.log(`http://localhost:${puerto}/api`);
 }));

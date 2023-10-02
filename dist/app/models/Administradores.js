@@ -16,6 +16,9 @@ const Administradores = database_1.sequelize.define('Administradores', {
         type: sequelize_typescript_1.DataType.STRING,
         allowNull: false
     },
+    correo: {
+        type: sequelize_typescript_1.DataType.STRING
+    },
     usuario: {
         type: sequelize_typescript_1.DataType.STRING,
         allowNull: false

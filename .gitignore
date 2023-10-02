@@ -1,10 +1,5 @@
 node_modules
-
-
 .env
-
-
 /.prod.env
+src/app/config/database.ts
 
-
-/src/app/config/database.ts

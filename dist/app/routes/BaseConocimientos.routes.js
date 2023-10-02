@@ -6,4 +6,5 @@ const express_1 = require("express");
 const BaseConocimientos = (0, express_1.Router)();
 BaseConocimientos.get("/", BaseConocimiento_controller_1.GetBaseConocimientos);
 BaseConocimientos.post("/", ValidateUser_1.ValidateUser, BaseConocimiento_controller_1.CreateBaseConocimiento);
+BaseConocimientos.put("/:id", ValidateUser_1.ValidateUser, BaseConocimiento_controller_1.UpdateById);
 exports.default = BaseConocimientos;

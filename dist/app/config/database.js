@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Connection = exports.sequelize = void 0;
 const sequelize_1 = require("sequelize");
 require("dotenv/config");
-exports.sequelize = new sequelize_1.Sequelize(process.env.DBNAME || '', process.env.USER || '', process.env.PASWORD, {
+exports.sequelize = new sequelize_1.Sequelize(process.env.DBNAME || '', process.env.USER || '', process.env.PASWORD || '', {
     host: process.env.HOST || '',
     port: Number(process.env.LOCAL),
     dialect: 'mysql', /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */

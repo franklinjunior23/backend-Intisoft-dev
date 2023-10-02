@@ -39,6 +39,7 @@ app.use(`${point_defect}/Informes`, informesRoutes);
 app.use(`${point_defect}/Tickets`, TicketsRoutes);
 app.use(`${point_defect}/BaseConocimiento`, BaseConocimientos);
 
+
 app.listen(puerto, async () => {
     ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
     ExecuteUserCreateDefect()
