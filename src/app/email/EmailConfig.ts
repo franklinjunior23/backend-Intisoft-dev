@@ -2,12 +2,12 @@ import nodemailer from "nodemailer";
 
 export function CreateEmailConexion() {
   const transporter = nodemailer.createTransport({
-    host:"dev.softintis.com",
-    port:465  ,
+    host:"smtp.gmail.com",
+    port:465 ,
     secure:true,
     auth: {
-      user: "SoportSoft@dev.softintis.com",
-      pass: "Franklin232004",
+      user: "SoftDevIntiscorp@gmail.com",
+      pass: "qupj neiw bubh kjbr",
     },
     tls: {
         rejectUnauthorized: false
@@ -23,4 +23,5 @@ export function CreateEmailConexion() {
   });
   return transporter;
 }
+
 

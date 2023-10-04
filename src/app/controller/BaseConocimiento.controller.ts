@@ -2,6 +2,7 @@ import { ActualyDats } from "../utils/DateFecha";
 import SuportDocs from "../models/SuportDocs";
 import { Request, Response } from "express";
 
+
 export const GetBaseConocimientos = async (req: Request, res: Response) => {
   try {
     const data: any = await SuportDocs.findAll({
@@ -11,6 +12,8 @@ export const GetBaseConocimientos = async (req: Request, res: Response) => {
       cantidad: data.length,
       create: ActualyDats(data),
     };
+    
+
     return res.json({ details: Details, data });
   } catch (error) {
     return res.status(401).json({ error, mesage: "Error en el servidor" });

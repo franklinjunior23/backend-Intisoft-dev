@@ -28,7 +28,7 @@ app.use(
 app.use(express.json());
 // documentacion for Swagger Ui
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-
+app.use(express.static('public'))
 // RouteS
 app.use(`${point_defect}/auth/Login`, Login);
 app.use(`${point_defect}/Empresas`, EmpresasRoutes);
