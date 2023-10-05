@@ -17,6 +17,9 @@ const SuportDocs = sequelize.define('suportDocs',{
     Categoria:{
         type: DataType.STRING,
     },
+    Archivos:{
+        type: DataType.JSON,
+    },
     Comentarios:{
         type: DataType.JSON,
     },
@@ -26,6 +29,7 @@ const SuportDocs = sequelize.define('suportDocs',{
     Calificacion:{
         type: DataType.INTEGER,
     },
+   
 })
 
 export default SuportDocs;
