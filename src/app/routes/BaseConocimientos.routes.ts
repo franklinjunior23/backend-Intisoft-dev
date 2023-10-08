@@ -1,10 +1,11 @@
 import { ValidateUser } from "../middleware/ValidateUser";
-import { GetBaseConocimientos,CreateBaseConocimiento, UpdateById } from "../controller/BaseConocimiento.controller";
+import { GetBaseConocimientos,CreateBaseConocimiento, UpdateById, GetBaseConocById } from "../controller/BaseConocimiento.controller";
 import {  Router } from "express";
 import { upload } from "../services/Multer";
 const BaseConocimientos = Router();
 BaseConocimientos.get("/", GetBaseConocimientos);
-BaseConocimientos.post("/" ,ValidateUser,upload.array('files'), CreateBaseConocimiento);
+BaseConocimientos.get("/:id", GetBaseConocById);
+BaseConocimientos.post("/" ,upload.array('image'),ValidateUser, CreateBaseConocimiento);
 BaseConocimientos.put("/:id",ValidateUser, UpdateById);
 
 

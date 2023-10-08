@@ -24,7 +24,7 @@ export async function ValidateUser(
     // Continuar con la ejecución de la solicitud
     next();
   } catch (error) {
-    console.log(error);
+    console.log({msg:error,name:"ValidateUser",line:37});
     return res.status(401).json({ message: "Invalid token" });
   }
 }
