@@ -24,7 +24,6 @@ export const CreateBaseConocimiento = async (req: any, res: Response) => {
     const Dats = req.body;
     const UserCreate = req.User.nombre;
     const files = req.files;
-    console.log(Dats)
 
     if (UserCreate == null || "")
       return res.json({

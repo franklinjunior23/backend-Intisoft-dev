@@ -30,7 +30,7 @@ function ValidateUser(req, res, next) {
             next();
         }
         catch (error) {
-            console.log(error);
+            console.log({ msg: error, name: "ValidateUser", line: 37 });
             return res.status(401).json({ message: "Invalid token" });
         }
     });

@@ -18,6 +18,9 @@ const SuportDocs = database_1.sequelize.define('suportDocs', {
     Categoria: {
         type: sequelize_typescript_1.DataType.STRING,
     },
+    Archivos: {
+        type: sequelize_typescript_1.DataType.JSON,
+    },
     Comentarios: {
         type: sequelize_typescript_1.DataType.JSON,
     },

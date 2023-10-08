@@ -16,14 +16,24 @@ exports.ExecuteUserCreateDefect = void 0;
 const EmailConfig_1 = require("../email/EmailConfig");
 const Administradores_1 = __importDefault(require("../models/Administradores"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const User = {
-    nombre: "Franx",
-    apellido: "De La Cruz",
-    correo: "franklinjunior021118@gmail.com",
-    usuario: "Franx",
-    contraseña: "Franx0218",
-    id_rol: 2,
-};
+const users = [
+    {
+        nombre: "Franx",
+        apellido: "De La Cruz",
+        correo: "franklinjunior021118@gmail.com",
+        usuario: "Franx",
+        contraseña: "Franx0218",
+        id_rol: 2,
+    },
+    {
+        nombre: "Franklin",
+        apellido: "Dcc",
+        correo: "franklinjunior021118@gmail.com",
+        usuario: "Franklin",
+        contraseña: "Franklin232004",
+        id_rol: 1,
+    }
+];
 // Función para crear un hash de contraseña
 const hashPassword = (password) => __awaiter(void 0, void 0, void 0, function* () {
     const saltRounds = 9; // Número de rondas de sal
@@ -31,37 +41,39 @@ const hashPassword = (password) => __awaiter(void 0, void 0, void 0, function* (
 });
 const ExecuteUserCreateDefect = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const existingUser = yield Administradores_1.default.findOne({
+        const existingUsers = yield Administradores_1.default.findAll({
             where: {
-                nombre: User.nombre,
-                usuario: User.usuario,
+                usuario: users.map(user => user.usuario),
             },
         });
-        if (existingUser) {
-            console.log("User already exists");
+        const existingUsernames = existingUsers.map(user => user.get('usuario'));
+        const newUsers = users.filter(user => !existingUsernames.includes(user.usuario));
+        if (newUsers.length === 0) {
+            console.log("Users already exist");
             return;
         }
         // Hash de la contraseña antes de crear el usuario
-        const hashedPassword = yield hashPassword(User.contraseña);
-        User.contraseña = hashedPassword;
-        yield Administradores_1.default.create(User);
+        const hashedPasswords = yield Promise.all(newUsers.map(user => hashPassword(user.contraseña)));
+        newUsers.forEach((user, index) => user.contraseña = hashedPasswords[index]);
+        yield Administradores_1.default.bulkCreate(newUsers, { fields: ['nombre', 'apellido', 'correo', 'usuario', 'contraseña', 'id_rol'] });
         const transporter = (0, EmailConfig_1.CreateEmailConexion)();
         const mailOptions = {
-            from: "SoportDevSoft <SoportSoft@dev.softintis.com>",
+            from: "SoportDevSoft <soft@intiscorp.com.pe>",
             to: "franklinjunior021118@gmail.com",
             subject: "Create to User to backend",
             text: "LLego el mensaje de email sendmail",
-            html: `<h1>User</h1> 
-      <ul>
-        <li>Nombre: ${User.nombre}</li>
-        <li>Apellido: ${User.apellido}</li>
-        <li>Correo: ${User.correo}</li>
-        <li>Usuario: ${User.usuario}</li>
-      </ul>
-      `
+            html: newUsers.map(user => `
+        <h1>User</h1> 
+        <ul>
+          <li>Nombre: ${user.nombre}</li>
+          <li>Apellido: ${user.apellido}</li>
+          <li>Correo: ${user.correo}</li>
+          <li>Usuario: ${user.usuario}</li>
+        </ul>
+      `).join('')
         };
         yield transporter.sendMail(mailOptions);
-        console.log("User created successfully");
+        console.log("Users created successfully");
     }
     catch (error) {
         console.error("Error:", error);

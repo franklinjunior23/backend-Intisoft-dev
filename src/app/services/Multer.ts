@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    cb(null, "./public/BdConocimiento");
+    
+    cb(null, "public/BdConocimiento");
   },
   filename: (_req, file, cb) => {
     cb(

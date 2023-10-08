@@ -22,30 +22,36 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const SignIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { usuario, contraseña } = req.body;
+        console.log(usuario, contraseña);
         const buscar = yield Administradores_1.default.findOne({
             where: { usuario: { [sequelize_1.Op.eq]: usuario } },
-            attributes: ['nombre', 'apellido', 'contraseña', 'id'],
+            attributes: ["nombre", "apellido", "contraseña", "id"],
             include: [
                 {
                     model: Roles_1.default,
-                    attributes: ['nombre'], // Selecciona los atributos de Roles que necesitas,
-                }
-            ]
+                    attributes: ["nombre"], // Selecciona los atributos de Roles que necesitas,
+                },
+            ],
         });
         const VerifyPass = yield bcrypt_1.default.compare(contraseña, buscar.contraseña);
         if (!buscar || !VerifyPass) {
-            return res.json({ loged: false });
+            return res.json({ loged: false, message: "Usuario Incorrecto" });
         }
         const user = {
             nombre: buscar.nombre,
             apellido: buscar.apellido,
-            rol: buscar.Role.nombre
+            rol: buscar.Role.nombre,
         };
-        const token_user = jsonwebtoken_1.default.sign({ datos: buscar }, process.env.SECRET_KEY_JWT || '');
+        const token_user = jsonwebtoken_1.default.sign({ datos: buscar }, process.env.SECRET_KEY_JWT || 'z2hk1OWGrBln30hwWnX3y');
         return res.json({ loged: true, token_user, user });
     }
     catch (error) {
-        res.json({ error: true, msg: 'Error En el servidor, comuniquese con el Administrador' });
+        console.log(error);
+        res.json({
+            error: true,
+            message: "Error En el servidor, comuniquese con el Administrador",
+            messageError: error,
+        });
     }
 });
 exports.SignIn = SignIn;
@@ -67,7 +73,7 @@ exports.CreateUsuario = CreateUsuario;
 const GetUsuariosAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield Administradores_1.default.findAll({
-            include: [{ model: Roles_1.default }]
+            include: [{ model: Roles_1.default }],
         });
         res.json(result);
     }

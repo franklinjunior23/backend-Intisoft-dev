@@ -7,12 +7,12 @@ exports.CreateEmailConexion = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 function CreateEmailConexion() {
     const transporter = nodemailer_1.default.createTransport({
-        host: "dev.softintis.com",
+        host: "smtp.gmail.com",
         port: 465,
         secure: true,
         auth: {
-            user: "SoportSoft@dev.softintis.com",
-            pass: "Franklin232004",
+            user: "SoftDevIntiscorp@gmail.com",
+            pass: "qupj neiw bubh kjbr",
         },
         tls: {
             rejectUnauthorized: false
