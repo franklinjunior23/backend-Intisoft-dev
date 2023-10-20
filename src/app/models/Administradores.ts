@@ -29,6 +29,10 @@ const Administradores = sequelize.define('Administradores',{
     id_rol:{
         type:DataType.INTEGER,
         allowNull:false
+    },
+    isBlocked:{
+        type:DataType.BOOLEAN,
+        
     }
     
 })

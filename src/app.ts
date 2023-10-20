@@ -16,6 +16,7 @@ import informesRoutes from "./app/routes/Informes.routes";
 import TicketsRoutes from "./app/routes/Tickets.routes";
 import BaseConocimientos from "./app/routes/BaseConocimientos.routes";
 import { ExecuteUserCreateDefect } from "./app/seeds/UserDefect";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const puerto = process.env.PORT || 3000;
@@ -25,7 +26,7 @@ app.use(
     origin: "*",
   })
 );
-
+app.use(cookieParser());
 app.use(express.json());
 // documentacion for Swagger Ui
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
@@ -47,7 +48,7 @@ app.listen(puerto, async () => {
   // force: true
   // alter: true
   // para tener cambios , actualizacion de la bd /
-  await sequelize.sync({  alter: false });
+  await sequelize.sync({  alter: true });
 
   console.log(`http://localhost:${puerto}/api`);
 });
