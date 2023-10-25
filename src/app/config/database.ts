@@ -1,10 +1,10 @@
 import {Sequelize} from "sequelize";
-import 'dotenv/config'
+import {VARIABLES_ENVIROMENTS} from './Enviroment';
 
-
-export const sequelize = new Sequelize (process.env.DBNAME || '' , process.env.USER || '', process.env.PASWORD || '', {
-    host: process.env.HOST||'',
-    port: Number(process.env.LOCAL),
+const {DATABASE_NAME,DATABASE_PASSWORD,DATABASE_USER,DATABASE_HOST,DATABASE_PORT,DATABASE_TYPE} = VARIABLES_ENVIROMENTS
+export const sequelize = new Sequelize (DATABASE_NAME || '',DATABASE_USER || '', DATABASE_PASSWORD || '', {
+    host: DATABASE_HOST||'',
+    port: Number(DATABASE_PORT),
     dialect: 'mysql',  /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */
    
 });
