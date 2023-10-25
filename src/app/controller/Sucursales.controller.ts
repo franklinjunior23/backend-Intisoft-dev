@@ -1,7 +1,7 @@
 import Empresa from "../models/Empresa";
 import Sucursal from "../models/Sucursales";
 import { Request, Response } from "express";
-
+import { v4 as uuidv4 } from "uuid";
 
 export const GetSucursales = async(req:Request,res:Response)=>{
     try {
@@ -19,7 +19,8 @@ export const CreateSucursal =async (req:Request,res:Response) => {
     if(nombre  && empresa ){
         const creat = await Sucursal.create({
             nombre,
-            id_empresa:empresa
+            id_empresa:empresa,
+            Token: uuidv4(),
         })
         res.json({create:true,creat})
         
@@ -33,14 +34,57 @@ export const GetSucursalesbyEmpresa =async (req:Request,res:Response) => {
     try {
         const {nombre} = req.params;
     const empre:any = await Empresa.findOne({where:{nombre}})
+    console.log(empre)
+
+    if(!empre){
+        const details ={
+            msg:"No se encontro la empresa",
+            error:true
+        }
+        return res.json({details})
+    }
+
     const busqueda = await Sucursal.findAll({
         where:{
             id_empresa:empre?.id
         }
     })
+  
     
     res.json(busqueda)
     } catch (error) {
         
     }
+}
+
+export const SignDevice = async (req:Request,res:Response) => { 
+    try {
+        const {token} = req.body
+    console.log(token)
+
+    if(!token){ return res.json({error:true,msg:'Token Invalido'})}
+    
+    const sucursal = await Sucursal.findOne({where:{Token:token}})
+
+    if(!sucursal){
+        const details ={
+            message:'Token Invalido , intente nuevamente',
+            estatus:'error'
+        }
+        return res.json({...details})
+    }
+   
+    
+
+    res.json(sucursal)
+    } catch (error) {
+        console.log({error:true,message:error})
+        res.json({error:true,message:error})
+    }
+}
+
+export const ReadCockie = async (req:Request,res:Response) => {
+    console.log(req.cookies.miCookie)
+    res.json({cookie:req.cookies})
+    // no me recepciona la coockie 
 }

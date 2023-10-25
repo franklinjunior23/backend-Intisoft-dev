@@ -10,9 +10,6 @@ import bcrypt from "bcrypt";
 export const SignIn = async (req: Request, res: Response) => {
   try {
     const { usuario, contraseña } = req.body;
-    console.log(usuario, contraseña);
-    
-
 
     const buscar: any = await Administradores.findOne({
       where: { usuario: { [Op.eq]: usuario } },
