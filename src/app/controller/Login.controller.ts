@@ -10,7 +10,7 @@ import bcrypt from "bcrypt";
 export const SignIn = async (req: Request, res: Response) => {
   try {
     const { usuario, contraseña } = req.body;
-    if(!usuario || !contraseña)return res.json({ loged: false , message: "Usuario Incorrecto" });
+    
     const buscar: any = await Administradores.findOne({
       where: { usuario: { [Op.eq]: usuario } },
       attributes: ["nombre", "apellido", "contraseña", "id"], // Selecciona los atributos que necesitas

@@ -17,6 +17,7 @@ import TicketsRoutes from "./app/routes/Tickets.routes";
 import BaseConocimientos from "./app/routes/BaseConocimientos.routes";
 import { ExecuteUserCreateDefect } from "./app/seeds/UserDefect";
 import cookieParser from "cookie-parser";
+import SystemInfo from "./app/routes/SystemInfo.routes";
 
 const app = express();
 const puerto = process.env.PORT || 3000;
@@ -40,6 +41,7 @@ app.use(`${point_defect}/Dispositivos`, DispostivoRoutes);
 app.use(`${point_defect}/Informes`, informesRoutes);
 app.use(`${point_defect}/Tickets`, TicketsRoutes);
 app.use(`${point_defect}/BaseConocimiento`, BaseConocimientos);
+app.use(`${point_defect}/SystemApi`, SystemInfo);
 
 app.listen(puerto, async () => {
   ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
@@ -48,7 +50,7 @@ app.listen(puerto, async () => {
   // force: true
   // alter: true
   // para tener cambios , actualizacion de la bd /
-  await sequelize.sync({  alter: true });
+  // await sequelize.sync({  alter: true });
 
   console.log(`http://localhost:${puerto}/api`);
 });
