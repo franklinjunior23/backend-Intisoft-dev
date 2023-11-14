@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import { FechaActually } from "../utils/DateFecha";
-
+import { Dispositvo, Users } from "../models";
 
 export async function GetAllTickets(req: Request, res: Response) {
   try {
@@ -18,7 +18,17 @@ export async function GetAllTickets(req: Request, res: Response) {
 
     const Empresas = await Empresa.findAll({
       attributes: ["nombre"],
-      include: [{ model: Sucursal, attributes: ["nombre", "id"] }],
+      include: [
+        {
+          model: Sucursal,
+          attributes: ["nombre", "id"],
+          include: [{ model: Users, attributes: ["nombre", "apellido"] },{model:Dispositvo,attributes:["nombre","id"]}],
+        },
+      ],
+    });
+    const TicketAbiertos = await Tikets.findAll({
+      where: { Estado: "Abierto" },
+      order: [["createdAt", "DESC"]],
     });
 
     const Ticke = await Tikets.findAll({
@@ -60,6 +70,7 @@ export async function GetAllTickets(req: Request, res: Response) {
         abierto: contarTicketsCerrados(Ticke, "Abierto"),
       },
       tickets: Ticke,
+      TicketsOpen: TicketAbiertos,
       Empresas,
       TicketsAll,
     });
