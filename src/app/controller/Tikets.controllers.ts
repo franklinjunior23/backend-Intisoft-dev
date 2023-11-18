@@ -22,7 +22,7 @@ export async function GetAllTickets(req: Request, res: Response) {
         {
           model: Sucursal,
           attributes: ["nombre", "id"],
-          include: [{ model: Users, attributes: ["nombre", "apellido"] },{model:Dispositvo,attributes:["nombre","id"]}],
+          include: [{ model: Users, attributes: ["nombre", "apellido",'id'] },{model:Dispositvo,attributes:["nombre","id"]}],
         },
       ],
     });
@@ -83,7 +83,7 @@ export async function GetAllTickets(req: Request, res: Response) {
 export async function CreateTickets(req: any, res: Response) {
   try {
     const { Fecha, Hora } = FechaActually();
-    const Dats = req.body;
+    const Dats:DataBodyTickets = req.body;
     const UserId = req.User.id;
     const TicketCreate = await Tikets.create({
       ...Dats,
@@ -96,4 +96,21 @@ export async function CreateTickets(req: any, res: Response) {
   } catch (error) {
     res.json({ create: error });
   }
+}
+
+
+interface DataBodyTickets {
+  Estado: string;
+  Titulo:string
+  Descripcion:string;
+  TipoD: string;
+  ItemId: string;
+  Nivel: string;
+  Prioridad:string;
+  Fecha: string;
+  Hora: string;
+  SucursalId: string;
+  UsuarioId: string;
+  AdministradorId: string;
+
 }

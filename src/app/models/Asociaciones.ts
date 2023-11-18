@@ -108,17 +108,7 @@ try {
     onUpdate: "SET NULL",
     onDelete: "SET NULL",
   });
-  Dispositivo.hasOne(Tikets,{
-    foreignKey: "PcId",
-    onUpdate: "SET NULL",
-    onDelete: "SET NULL",
-  })
-  Tikets.belongsTo(Dispositivo,{ 
-    foreignKey: "PcId",
-    targetKey: "id",
-    onUpdate: "SET NULL",
-    onDelete: "SET NULL",
-  })
+ 
 } catch (error) {
   console.log(error);
 }
