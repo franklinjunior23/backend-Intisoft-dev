@@ -52,10 +52,6 @@ const Tikets = sequelize.define("tikets", {
   },
   ItemId: {
     type: DataType.INTEGER,
-    references:{
-        model:Users,
-        key:"id"
-    }
   },
 });
 export default Tikets;

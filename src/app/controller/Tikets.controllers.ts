@@ -22,7 +22,10 @@ export async function GetAllTickets(req: Request, res: Response) {
         {
           model: Sucursal,
           attributes: ["nombre", "id"],
-          include: [{ model: Users, attributes: ["nombre", "apellido",'id'] },{model:Dispositvo,attributes:["nombre","id"]}],
+          include: [
+            { model: Users, attributes: ["nombre", "apellido", "id"] },
+            { model: Dispositvo, attributes: ["nombre", "id"] },
+          ],
         },
       ],
     });
@@ -52,7 +55,7 @@ export async function GetAllTickets(req: Request, res: Response) {
       include: [
         {
           model: Administradores,
-          attributes: ["nombre", "apellido"],
+          attributes: ["usuario"],
         },
         {
           model: Sucursal,
@@ -82,35 +85,117 @@ export async function GetAllTickets(req: Request, res: Response) {
 
 export async function CreateTickets(req: any, res: Response) {
   try {
+    // para traer la fecha y la hora actual
     const { Fecha, Hora } = FechaActually();
-    const Dats:DataBodyTickets = req.body;
+
+    // recojer los datos que manda el frontend
+
+    const Dats: DataBodyTickets = req.body;
+
+    // buscar el id de la empresa y la sucursal , con lo que manda el frontend
+    const idEmpresaSucursal: any = await Empresa.findOne({
+      where: { nombre: Dats.Empresa },
+      attributes: ["id", "nombre"], // Corregir aquí
+      include: [
+        {
+          model: Sucursal,
+          where: { nombre: Dats.Sucursal },
+          attributes: ["id", "nombre"],
+        },
+      ],
+    });
+
+    if (!idEmpresaSucursal) {
+      return res.json({
+        create: false,
+        message: "No se encontro la empresa o la sucursal",
+      });
+    }
+
     const UserId = req.User.id;
+
     const TicketCreate = await Tikets.create({
       ...Dats,
       UsuarioId: UserId,
       Estado: "Abierto",
+      EmpresaId: idEmpresaSucursal.id,
+      SucursalId: idEmpresaSucursal.Sucursales[0].id,
       Fecha,
       Hora,
+      TypeItem: Dats.TipoD,
+      ItemId: Dats.IdItemTick,
     });
-    res.json({ create: true });
+    res.json({ create: true, message: "Ticket creado con exito" });
   } catch (error) {
     res.json({ create: error });
   }
 }
 
+export async function UpdateTickets(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { Estado } = req.body;
+
+    const TicketOld: any = await Tikets.findByPk(id);
+
+    if (!TicketOld) {
+      return res.status(404).json({
+        update: false,
+        message: "Ticket no encontrado",
+      });
+    }
+
+    if (TicketOld.Estado === "Cerrado" || TicketOld.Estado === "Cancelado") {
+      return res.json({
+        update: false,
+        message: "No se puede actualizar un ticket cerrado o cancelado",
+      });
+    }
+
+    const updatedTicket = await Tikets.update({ Estado }, { where: { id } });
+
+    if (updatedTicket[0] === 0) {
+      return res.status(500).json({
+        update: false,
+        message: "Error al actualizar el ticket",
+      });
+    }
+
+    res.json({
+      update: true,
+      message: `Ticket actualizado a ${Estado} con éxito`,
+    });
+  } catch (error) {
+    console.error("Error al actualizar el ticket:", error);
+    res.status(500).json({
+      update: false,
+      message: "Error interno del servidor al actualizar el ticket",
+    });
+  }
+}
 
 interface DataBodyTickets {
   Estado: string;
-  Titulo:string
-  Descripcion:string;
+  Titulo: string;
+  Descripcion: string;
   TipoD: string;
   ItemId: string;
   Nivel: string;
-  Prioridad:string;
+  Prioridad: string;
   Fecha: string;
   Hora: string;
-  SucursalId: string;
+  Sucursal: string;
+  Empresa: string;
   UsuarioId: string;
   AdministradorId: string;
+  IdItemTick: string;
+}
 
+interface DataEmpresaSucursal {
+  id: number;
+  nombre: string;
+  Sucursales: {
+    id: number;
+    nombre: string;
+  };
 }

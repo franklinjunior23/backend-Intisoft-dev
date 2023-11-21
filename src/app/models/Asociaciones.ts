@@ -1,3 +1,4 @@
+import { Ticket } from ".";
 import { sequelize } from "../config/database";
 import Administradores from "./Administradores";
 import DetalleDispositivo from "./DetalleComponents";
@@ -102,15 +103,18 @@ try {
     onUpdate: "SET NULL",
     onDelete: "SET NULL",
   });
-  Tikets.belongsTo(Sucursal, { 
+  Tikets.belongsTo(Sucursal, {
     foreignKey: "SucursalId",
     targetKey: "id",
     onUpdate: "SET NULL",
     onDelete: "SET NULL",
   });
- 
+
+
+
+
 } catch (error) {
-  console.log(error);
+  console.log("asociaciones : " + error);
 }
 
 sequelize.sync();
