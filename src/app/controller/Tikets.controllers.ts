@@ -62,6 +62,10 @@ export async function GetAllTickets(req: Request, res: Response) {
           attributes: ["nombre"],
           include: [{ model: Empresa, attributes: ["nombre"] }],
         },
+        {
+          model:Administradores,
+          attributes: ["usuario"],
+        }
       ],
       order: [["createdAt", "DESC"]],
     });
@@ -114,7 +118,7 @@ export async function CreateTickets(req: any, res: Response) {
 
     const UserId = req.User.id;
 
-    const TicketCreate = await Tikets.create({
+    const TicketCreate:any = await Tikets.create({
       ...Dats,
       UsuarioId: UserId,
       Estado: "Abierto",
@@ -125,16 +129,22 @@ export async function CreateTickets(req: any, res: Response) {
       TypeItem: Dats.TipoD,
       ItemId: Dats.IdItemTick,
     });
-    res.json({ create: true, message: "Ticket creado con exito" });
+    res.json({ create: true, message: `Ticket creado con exito COD: ${TicketCreate.id}` });
   } catch (error) {
     res.json({ create: error });
   }
 }
 
-export async function UpdateTickets(req: Request, res: Response) {
+export async function UpdateTickets(req: any, res: Response) {
   try {
     const { id } = req.params;
+
     const { Estado } = req.body;
+
+
+    const UserId = req.User.nombre;
+
+
 
     const TicketOld: any = await Tikets.findByPk(id);
 
@@ -152,7 +162,10 @@ export async function UpdateTickets(req: Request, res: Response) {
       });
     }
 
-    const updatedTicket = await Tikets.update({ Estado }, { where: { id } });
+    const updatedTicket = await Tikets.update(
+      { Estado, UserUpdateId: UserId },
+      { where: { id } }
+    );
 
     if (updatedTicket[0] === 0) {
       return res.status(500).json({

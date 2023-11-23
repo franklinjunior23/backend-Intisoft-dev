@@ -110,6 +110,20 @@ try {
     onDelete: "SET NULL",
   });
 
+  Empresa.hasOne(Tikets, {
+    foreignKey: "EmpresaId",
+    onUpdate: "SET NULL",
+    onDelete: "SET NULL",
+  });
+  Tikets.belongsTo(Sucursal, {
+    foreignKey: "EmpresaId",
+    targetKey: "id",
+    onUpdate: "SET NULL",
+    onDelete: "SET NULL",
+  });
+
+
+
 
 
 
