@@ -6,6 +6,7 @@ import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import DetalleDispositivo from "../models/DetalleComponents";
 import { Console, error } from "console";
+import CreateNotify from "../utils/CreateNotify";
 
 export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -29,7 +30,7 @@ export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const CreateDisp = async (req: Request, res: Response) => {
+export const CreateDisp = async (req: any, res: Response) => {
   try {
     const { empresa, sucursal } = req.params;
     const data = req.body;
@@ -85,6 +86,7 @@ export const CreateDisp = async (req: Request, res: Response) => {
         });
 
         if (CreateDisp && CreatComponDisp) {
+          await CreateNotify(`Se ha creado un nuevo dispositivo en la empresa "${empresa}" y sucursal "${sucursal}". Detalles del dispositivo: Tipo: ${CreateDisp?.tipo}, Nombre: ${CreateDisp.nombre}.`, req.User?.nombre);
           return res.json({ create: true });
         }
       }
@@ -104,6 +106,8 @@ export const CreateDisp = async (req: Request, res: Response) => {
     console.log(error)
   }
 };
+
+
 export const GetsDispositivos = async (req: Request, res: Response) => {
   try {
     const { empresa, sucursal } = req.query;

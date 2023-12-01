@@ -1,6 +1,7 @@
 import { ActualyDats } from "../utils/DateFecha";
 import SuportDocs from "../models/SuportDocs";
 import { Request, Response } from "express";
+import CreateNotify from "../utils/CreateNotify";
 
 export const GetBaseConocimientos = async (req: Request, res: Response) => {
   try {
@@ -20,7 +21,6 @@ export const GetBaseConocimientos = async (req: Request, res: Response) => {
 
 export const CreateBaseConocimiento = async (req: any, res: Response) => {
   try {
-
     const Dats = req.body;
     const UserCreate = req.User.nombre;
     const files = req.files;
@@ -31,7 +31,7 @@ export const CreateBaseConocimiento = async (req: any, res: Response) => {
         message: "Solamente los Soportes pueden acceder a ello",
       });
 
-    const data = await SuportDocs.create({
+    const data: any = await SuportDocs.create({
       ...Dats,
       Autor: UserCreate,
       Archivos: [...files],
@@ -40,12 +40,17 @@ export const CreateBaseConocimiento = async (req: any, res: Response) => {
     if (!data) {
       return res.json({ create: false, message: "No se creo correctamente" });
     }
+    await CreateNotify(
+      `¡Nuevo documento en la base de conocimiento! Título: "${data?.Titulo}"`,
+      UserCreate
+    );
+
     return res.status(200).json({
       message: "Se creo correctamente",
       create: true,
     });
   } catch (error) {
-    console.log({ msg: error, name: "CreateBaseConocimiento", line: 85 })
+    console.log({ msg: error, name: "CreateBaseConocimiento", line: 85 });
     return res.json({ create: false, message: "Error en el servidor" });
   }
 };
@@ -83,8 +88,9 @@ export const GetBaseConocById = async (req: Request, res: Response) => {
     return res.json({ error: true, message: "Falta datos" });
   try {
     const data = await SuportDocs.findByPk(id);
-    if(data ===null || data === undefined) return res.json({ search:false ,message:"No se encontro el registro"})
-    return res.json({ search:true ,data });
+    if (data === null || data === undefined)
+      return res.json({ search: false, message: "No se encontro el registro" });
+    return res.json({ search: true, data });
   } catch (error) {
     return res.json({ error: true, message: "Error en el servidor" });
   }

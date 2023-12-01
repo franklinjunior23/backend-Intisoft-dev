@@ -5,6 +5,8 @@ import DetalleDispositivo from "./DetalleComponents";
 import Dispositivo from "./Dispositvo";
 import Empresa from "./Empresa";
 import Informes from "./Informes";
+import Notifications_read from "./Notification_read";
+import Notifications from "./Notifications";
 import Roles from "./Roles";
 import Sucursal from "./Sucursales";
 import Tikets from "./Ticket";
@@ -121,11 +123,30 @@ try {
     onUpdate: "SET NULL",
     onDelete: "SET NULL",
   });
-
-
-
-
-
+  //Notifications
+  Administradores.hasMany(Notifications_read, {
+    foreignKey: "User_id",
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+  });
+  Notifications_read.belongsTo(Administradores, {
+    foreignKey: "User_id",
+    targetKey: "id",
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+  });
+//Notification and Notification_read
+  Notifications.hasMany(Notifications_read, {
+    foreignKey: "Notification_id",
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+  });
+  Notifications_read.belongsTo(Notifications, {
+    foreignKey: "Notification_id",
+    targetKey: "id",
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+  });
 
 } catch (error) {
   console.log("asociaciones : " + error);

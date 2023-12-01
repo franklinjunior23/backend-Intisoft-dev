@@ -1,3 +1,4 @@
+import CreateNotify from "../utils/CreateNotify";
 import { Users, Sucursales, Empresa, Ticket } from "../models";
 import { Request, Response } from "express";
 
@@ -15,8 +16,8 @@ export const GetEmpresas = async (req: Request, res: Response) => {
     const details = {
       Empresas: CountEmpresas,
       Sucursales: CountSucursales,
-      Usuarios:CountUsers,
-      Tickets:Countickets
+      Usuarios: CountUsers,
+      Tickets: Countickets,
     };
     res.json({ data: search, details });
   } catch (error) {
@@ -28,7 +29,7 @@ export const GetEmpresas = async (req: Request, res: Response) => {
   }
 };
 
-export const CreateEmpresa = async (req: Request, res: Response) => {
+export const CreateEmpresa = async (req: any, res: Response) => {
   try {
     const { nombre, lugar } = req.body;
     if (nombre && lugar) {
@@ -36,6 +37,11 @@ export const CreateEmpresa = async (req: Request, res: Response) => {
         nombre,
         lugar,
       });
+      console.log(req.User);
+      await CreateNotify(
+        `Se ha creado la empresa "${nombre}" con el nombre "${nombre}`,
+        req.User?.nombre
+      );
       return res.json({ create: true, cret });
     }
     return res

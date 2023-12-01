@@ -18,6 +18,8 @@ import BaseConocimientos from "./app/routes/BaseConocimientos.routes";
 import { ExecuteUserCreateDefect } from "./app/seeds/UserDefect";
 import cookieParser from "cookie-parser";
 import SystemInfo from "./app/routes/SystemInfo.routes";
+import Notify_Routes from "./app/routes/Notification.routes";
+
 
 const app = express();
 const puerto = process.env.PORT || 3000;
@@ -41,11 +43,13 @@ app.use(`${point_defect}/Dispositivos`, DispostivoRoutes);
 app.use(`${point_defect}/Informes`, informesRoutes);
 app.use(`${point_defect}/Tickets`, TicketsRoutes);
 app.use(`${point_defect}/BaseConocimiento`, BaseConocimientos);
+app.use(`${point_defect}/Notification`, Notify_Routes);
 app.use(`${point_defect}/SystemApi`, SystemInfo);
 
 app.listen(puerto, async () => {
   ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
   ExecuteUserCreateDefect();
+
 
   // force: true
   // alter: true

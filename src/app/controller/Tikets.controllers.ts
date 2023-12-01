@@ -5,9 +5,12 @@ import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import { FechaActually } from "../utils/DateFecha";
 import { Dispositvo, Users } from "../models";
+import CreateNotify from "../utils/CreateNotify";
 
 export async function GetAllTickets(req: Request, res: Response) {
+  
   try {
+
     function contarTicketsCerrados(tickets: any, estado: string): Number {
       const ticketsCerrados = tickets.filter(
         (ticket: any) => ticket.Estado === estado
@@ -129,6 +132,7 @@ export async function CreateTickets(req: any, res: Response) {
       TypeItem: Dats.TipoD,
       ItemId: Dats.IdItemTick,
     });
+    await CreateNotify(`Se ha creado un nuevo Ticket con el id "${TicketCreate.id}" en la empresa "${idEmpresaSucursal.nombre}" de la sucursal "${idEmpresaSucursal.Sucursales[0].nombre}" tipo de item ${Dats.TipoD}.`, req.User.nombre )
     res.json({ create: true, message: `Ticket creado con exito COD: ${TicketCreate.id}` });
   } catch (error) {
     res.json({ create: error });
