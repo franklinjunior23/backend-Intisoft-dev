@@ -7,7 +7,7 @@ import Login from "./app/routes/Login.routes";
 import { ExecuteRoles } from "./app/seeds/RolesPredet.seed";
 import swaggerUi from "swagger-ui-express";
 import specs from "./docs/Swagger";
-
+import { Server } from "socket.io";
 import EmpresasRoutes from "./app/routes/Empresas.routes";
 import Sucursales_endpoint from "./app/routes/Sucursales.routes";
 import UserRoutes from "./app/routes/Users.routes";
@@ -19,9 +19,13 @@ import { ExecuteUserCreateDefect } from "./app/seeds/UserDefect";
 import cookieParser from "cookie-parser";
 import SystemInfo from "./app/routes/SystemInfo.routes";
 import Notify_Routes from "./app/routes/Notification.routes";
-
+import handleSocketFunctions from "./app/utils/SocketIo";
+import Notifications_Routes from "./app/routes/Notifications/Notifications.routes";
 
 const app = express();
+
+const server = require("http").Server(app);
+export const io = new Server(server,{ cors: { origin: "*" } });
 const puerto = process.env.PORT || 3000;
 const point_defect = process.env.POINT || "/api/v1";
 app.use(
@@ -45,8 +49,11 @@ app.use(`${point_defect}/Tickets`, TicketsRoutes);
 app.use(`${point_defect}/BaseConocimiento`, BaseConocimientos);
 app.use(`${point_defect}/Notification`, Notify_Routes);
 app.use(`${point_defect}/SystemApi`, SystemInfo);
+app.use(`${point_defect}/Notifications`, Notifications_Routes);
 
-app.listen(puerto, async () => {
+
+io.on("connection",handleSocketFunctions);
+server.listen(puerto, async () => {
   ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
   ExecuteUserCreateDefect();
 

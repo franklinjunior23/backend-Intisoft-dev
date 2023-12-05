@@ -86,7 +86,7 @@ export const CreateDisp = async (req: any, res: Response) => {
         });
 
         if (CreateDisp && CreatComponDisp) {
-          await CreateNotify(`Se ha creado un nuevo dispositivo en la empresa "${empresa}" y sucursal "${sucursal}". Detalles del dispositivo: Tipo: ${CreateDisp?.tipo}, Nombre: ${CreateDisp.nombre}.`, req.User?.nombre);
+          await CreateNotify(`Se ha creado un nuevo dispositivo en la empresa "${empresa}" y sucursal "${sucursal}". Detalles del dispositivo: Tipo: ${CreateDisp?.tipo}, Nombre: ${CreateDisp.nombre}.`, req.User?.nombre , req.User?.id);
           return res.json({ create: true });
         }
       }
@@ -133,17 +133,17 @@ export const GetsDispositivos = async (req: Request, res: Response) => {
   }
 };
 
-export const UpdateDisp = async (req: Request, res: Response) => {
+export const UpdateDisp = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
     const DatsNew = req.body;
 
-    const DataDispositivo:any = await Dispositivo.findByPk(id);
+    const DataDispositivo:any = await Dispositivo.findByPk(id,{
+      include:[{model:Sucursal,include:[{model:Empresa}]}]
+    });
     const DataDetalleDisp:any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: id },
     });
-    console.log(DatsNew);
-
     const CamposUpd: any = {};
     for (const CampUpdate in DatsNew) {
       if (DataDispositivo[CampUpdate] !== DatsNew[CampUpdate]) {
@@ -152,7 +152,6 @@ export const UpdateDisp = async (req: Request, res: Response) => {
     }
 
     if (!DatsNew.IdUser || DatsNew.IdUser === 'null') {
-      console.log("funcionó");
       CamposUpd.IdUser = null;
     }
 
@@ -167,8 +166,13 @@ export const UpdateDisp = async (req: Request, res: Response) => {
 
     Campos.Almacenamiento_detalle = Campos.Almacenamiento;
     await DataDetalleDisp.update(Campos);
-
-    return res.json({ Campos });
+    await CreateNotify(
+      `Se ha actualizado el dispositivo "${DataDispositivo?.nombre}" de la empresa ${DataDispositivo?.Sucursale.Empresa.nombre} y sucursal ${DataDispositivo?.Sucursale.nombre}`,
+      req.User?.nombre,
+      req.User?.id
+    );
+   
+    return res.json({ update:true , message: "Se actualizo correctamente" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: true, message: "Error al actualizar el dispositivo" });

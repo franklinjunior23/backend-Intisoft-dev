@@ -18,14 +18,17 @@ export const CreateSucursal = async (req: any, res: Response) => {
   try {
     const { nombre, empresa } = req.body;
     if (nombre && empresa) {
+
+      const Emprsa:any = await Empresa.findByPk(empresa);
       const creat = await Sucursal.create({
         nombre,
         id_empresa: empresa,
         Token: uuidv4(),
       });
       await CreateNotify(
-        `Se creo una nueva sucursal con el nombre "${creat.nombre}" en la empresa ${empresa}`,
-        req.User?.nombre
+        `Se creo una nueva sucursal con el nombre "${creat.nombre}" en la empresa ${Emprsa.nombre}`,
+        req.User?.nombre,
+        req.User?.id
       );
       res.json({ create: true, creat });
     }
@@ -39,7 +42,6 @@ export const GetSucursalesbyEmpresa = async (req: Request, res: Response) => {
   try {
     const { nombre } = req.params;
     const empre: any = await Empresa.findOne({ where: { nombre } });
-    console.log(empre);
 
     if (!empre) {
       const details = {

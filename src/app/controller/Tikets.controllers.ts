@@ -8,9 +8,7 @@ import { Dispositvo, Users } from "../models";
 import CreateNotify from "../utils/CreateNotify";
 
 export async function GetAllTickets(req: Request, res: Response) {
-  
   try {
-
     function contarTicketsCerrados(tickets: any, estado: string): Number {
       const ticketsCerrados = tickets.filter(
         (ticket: any) => ticket.Estado === estado
@@ -66,9 +64,9 @@ export async function GetAllTickets(req: Request, res: Response) {
           include: [{ model: Empresa, attributes: ["nombre"] }],
         },
         {
-          model:Administradores,
+          model: Administradores,
           attributes: ["usuario"],
-        }
+        },
       ],
       order: [["createdAt", "DESC"]],
     });
@@ -121,7 +119,7 @@ export async function CreateTickets(req: any, res: Response) {
 
     const UserId = req.User.id;
 
-    const TicketCreate:any = await Tikets.create({
+    const TicketCreate: any = await Tikets.create({
       ...Dats,
       UsuarioId: UserId,
       Estado: "Abierto",
@@ -129,11 +127,18 @@ export async function CreateTickets(req: any, res: Response) {
       SucursalId: idEmpresaSucursal.Sucursales[0].id,
       Fecha,
       Hora,
-      TypeItem: Dats.TipoD,
-      ItemId: Dats.IdItemTick,
+      TypeItem: Dats.TipoD ?? null,
+      ItemId: Dats.IdItemTick ?? null,
     });
-    await CreateNotify(`Se ha creado un nuevo Ticket con el id "${TicketCreate.id}" en la empresa "${idEmpresaSucursal.nombre}" de la sucursal "${idEmpresaSucursal.Sucursales[0].nombre}" tipo de item ${Dats.TipoD}.`, req.User.nombre )
-    res.json({ create: true, message: `Ticket creado con exito COD: ${TicketCreate.id}` });
+    await CreateNotify(
+      `Se ha creado un nuevo Ticket con el id "${TicketCreate.id}" en la empresa "${idEmpresaSucursal.nombre}" de la sucursal "${idEmpresaSucursal.Sucursales[0].nombre}" tipo de item ${Dats.TipoD}.`,
+      req.User.nombre,
+      req.User.id
+    );
+    res.json({
+      create: true,
+      message: `Ticket creado con exito COD: ${TicketCreate.id}`,
+    });
   } catch (error) {
     res.json({ create: error });
   }
@@ -145,10 +150,7 @@ export async function UpdateTickets(req: any, res: Response) {
 
     const { Estado } = req.body;
 
-
     const UserId = req.User.nombre;
-
-
 
     const TicketOld: any = await Tikets.findByPk(id);
 
@@ -178,6 +180,11 @@ export async function UpdateTickets(req: any, res: Response) {
       });
     }
 
+    await CreateNotify(
+      `Se ha actualizado el ticket con el id "${TicketOld.id}" a "${Estado}"`,
+      req.User.nombre,
+      req.User.id
+    );
     res.json({
       update: true,
       message: `Ticket actualizado a ${Estado} con éxito`,

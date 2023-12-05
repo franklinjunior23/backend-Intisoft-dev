@@ -53,6 +53,9 @@ const Administradores = sequelize.define('Administradores',{
     last_login_attempt:{
         type:DataType.STRING,
     },
+    isActive:{
+        type:DataType.BOOLEAN,  
+    }
     
     
     

@@ -42,7 +42,8 @@ export const CreateBaseConocimiento = async (req: any, res: Response) => {
     }
     await CreateNotify(
       `¡Nuevo documento en la base de conocimiento! Título: "${data?.Titulo}"`,
-      UserCreate
+      UserCreate,
+      req.User?.id
     );
 
     return res.status(200).json({
@@ -66,13 +67,19 @@ export const UpdateById = async (req: any, res: Response) => {
         where: { id: IDDOCSBS },
       }
     );
-    console.log(DocOld);
-    if (DocOld)
-      return res.json({ update: true, message: `Se actualizo correctamente ` });
-    return res.json({
-      update: false,
-      message: "No se actualizo correctamente",
-    });
+
+    if (!DocOld)
+      return res.json({
+        update: false,
+        message: "No se actualizo correctamente",
+      });
+
+    await CreateNotify(
+      `Se ha actualizado el documento "${DocOld?.Titulo} de la base de conocimiento"`,
+      req.User?.nombre,
+      req.User?.id
+    );
+    return res.json({ update: true, message: `Se actualizo correctamente ` });
   } catch (error) {
     res.json({
       update: false,

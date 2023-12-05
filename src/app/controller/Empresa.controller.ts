@@ -39,8 +39,9 @@ export const CreateEmpresa = async (req: any, res: Response) => {
       });
       console.log(req.User);
       await CreateNotify(
-        `Se ha creado la empresa "${nombre}" con el nombre "${nombre}`,
-        req.User?.nombre
+        `Se ha creado una nueva empresa con el nombre "${nombre}"`,
+        req.User?.nombre,
+        req.User?.id
       );
       return res.json({ create: true, cret });
     }

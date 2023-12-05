@@ -9,7 +9,7 @@ DispostivoRoutes.get('/Users',GetsDispUsingUser)
 DispostivoRoutes.get('/:id',GetsDispositivo)
 DispostivoRoutes.get('/PCLAP',GetPcYLap)
 DispostivoRoutes.post('/:empresa/:sucursal',ValidateUser,CreateDisp)
-DispostivoRoutes.put('/:id',UpdateDisp)
+DispostivoRoutes.put('/:id',ValidateUser,UpdateDisp)
 DispostivoRoutes.delete('/:id',DeleteDisp)
 
 
