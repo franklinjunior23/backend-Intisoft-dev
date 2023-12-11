@@ -1,25 +1,28 @@
 import CreateNotify from "../utils/CreateNotify";
-import { Users, Sucursales, Empresa, Ticket } from "../models";
+import { Users, Sucursales, Empresa, Ticket, Administradores } from "../models";
 import { Request, Response } from "express";
 
 //empresasss
 export const GetEmpresas = async (req: Request, res: Response) => {
   try {
     const search = await Empresa.findAll({
-      include: [{ model: Sucursales }],
+      attributes:['id','nombre','lugar'],
+      include: [{ model: Sucursales ,attributes:['id','nombre',]}],
     });
     const { count: CountEmpresas } = await Empresa.findAndCountAll();
     const { count: CountSucursales } = await Sucursales.findAndCountAll();
     const { count: CountUsers } = await Users.findAndCountAll();
     const { count: Countickets } = await Ticket.findAndCountAll();
 
+    const DataUser = await Administradores.findAll({attributes:['nombre','apellido','isActive','updatedAt']});
     const details = {
       Empresas: CountEmpresas,
       Sucursales: CountSucursales,
       Usuarios: CountUsers,
       Tickets: Countickets,
     };
-    res.json({ data: search, details });
+    res.json({ data: search, details,ListUsers:DataUser });
+
   } catch (error) {
     console.log(error);
     res.json({

@@ -7,6 +7,8 @@ import Empresa from "../models/Empresa";
 import DetalleDispositivo from "../models/DetalleComponents";
 import { Console, error } from "console";
 import CreateNotify from "../utils/CreateNotify";
+import { generarCodigo } from "../utils/CodigoDisp";
+import { create } from "domain";
 
 export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -34,9 +36,6 @@ export const CreateDisp = async (req: any, res: Response) => {
   try {
     const { empresa, sucursal } = req.params;
     const data = req.body;
-
-    console.log("llego")
-    console.log(data)
 
     const EmpresaBySucursal = await Sucursal.findOne({
       where: {
@@ -79,6 +78,13 @@ export const CreateDisp = async (req: any, res: Response) => {
           IdSucursal: EmpresaSearch?.id,
           IdUser:null
         });
+        const codigo_dispositivo = generarCodigo(empresa,sucursal,CreateDisp.id)
+        await Dispositivo.update(
+          { codigo_dispositivo },
+          { where: { id: CreateDisp.id } }
+        );
+      
+
         const CreatComponDisp = await DetalleDispositivo.create({
           IdDispositivo: CreateDisp.id,
           ...data,

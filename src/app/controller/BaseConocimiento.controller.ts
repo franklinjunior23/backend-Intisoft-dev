@@ -58,33 +58,52 @@ export const CreateBaseConocimiento = async (req: any, res: Response) => {
 export const UpdateById = async (req: any, res: Response) => {
   const IDDOCSBS = req.params.id;
   const Data = req.body;
-  try {
-    if (Data?.Contenido == null || "")
-      return res.json({ update: false, message: "Falta datos" });
-    const DocOld: any = await SuportDocs.update(
-      { Contenido: Data?.Contenido },
-      {
-        where: { id: IDDOCSBS },
-      }
-    );
+  const files = req.files;
 
-    if (!DocOld)
+  try {
+    if (!Data || !Data.Contenido) {
+      return res.json({ update: false, message: "Falta datos" });
+    }
+
+    const existingDoc: any = await SuportDocs.findByPk(IDDOCSBS);
+
+    if (existingDoc.Contenido === Data.Contenido) {
       return res.json({
         update: false,
-        message: "No se actualizo correctamente",
+        message: "Tienes que cambiar para poder actualizar el documento",
       });
+    }
+
+    let updateData: any = { Contenido: Data.Contenido };
+
+    if (files) {
+      updateData.Archivos = [
+        ...(existingDoc?.Archivos || []),
+        ...(files || []),
+      ];
+    }
+
+    const updatedDoc: any = await SuportDocs.update(updateData, {
+      where: { id: IDDOCSBS },
+    });
+
+    if (!updatedDoc) {
+      throw new Error("Error al actualizar el documento");
+    }
 
     await CreateNotify(
-      `Se ha actualizado el documento "${DocOld?.Titulo} de la base de conocimiento"`,
+      `Se ha actualizado el documento "${existingDoc?.Titulo}" de la base de conocimiento`,
       req.User?.nombre,
       req.User?.id
     );
-    return res.json({ update: true, message: `Se actualizo correctamente ` });
+
+    return res.json({ update: true, message: "Se actualizó correctamente" });
   } catch (error) {
-    res.json({
+    console.error(`Error al Actualizar Base de Conocimiento: ${error}`);
+    res.status(500).json({
       update: false,
       error: true,
-      message: "Hubo un error , intente nuevamente",
+      message: "Hubo un error, intente nuevamente",
     });
   }
 };

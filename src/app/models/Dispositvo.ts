@@ -7,6 +7,9 @@ const Dispositivo = sequelize.define("Dispositivo", {
     primaryKey: true,
     autoIncrement: true,
   },
+  codigo_dispositivo:{
+    type:DataType.STRING,
+  },
   nombre: {
     type: DataType.STRING,
   },

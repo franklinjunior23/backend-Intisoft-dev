@@ -7,6 +7,8 @@ import Administradores from "../models/Administradores";
 import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import { CountData } from "../utils/CountData";
+import { Sucursales } from "../models";
+import { Op } from "sequelize";
 
 export const GetInformes =async (req:Request,res:Response) => {
     try {
@@ -69,4 +71,29 @@ export const GetDetailsHome = async(req:Request,res:Response) => {
     } catch (error:any) {
         res.json({create:false,msg:error.message})
     }
+}
+
+export const GetEtiquetasPc = async(req:Request,res:Response) => {
+
+  const {empresa,sucursal} = req.query
+  const {tipo} = req.params
+  const data = await Dispositivo.findAll({
+    where:{
+      IdSucursal:{[Op.eq]:sucursal}
+    },
+    include:[
+      {
+        model:Sucursales,
+        attributes:['nombre','Token'],
+        where:{id_empresa:{[Op.eq]:empresa}},
+        include:[
+          {
+            model:Empresa,
+            attributes:['nombre']
+          }
+        ]
+      }
+    ]
+  })
+  return res.json({DataDispositivo:data})
 }
