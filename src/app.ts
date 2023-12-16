@@ -25,7 +25,7 @@ import Notifications_Routes from "./app/routes/Notifications/Notifications.route
 const app = express();
 
 const server = require("http").Server(app);
-export const io = new Server(server,{ cors: { origin: "*" } });
+export const io = new Server(server, { cors: { origin: "*" } });
 const puerto = process.env.PORT || 3000;
 const point_defect = process.env.POINT || "/api/v1";
 app.use(
@@ -51,12 +51,10 @@ app.use(`${point_defect}/Notification`, Notify_Routes);
 app.use(`${point_defect}/SystemApi`, SystemInfo);
 app.use(`${point_defect}/Notifications`, Notifications_Routes);
 
-
-io.on("connection",handleSocketFunctions);
+io.on("connection", handleSocketFunctions);
 server.listen(puerto, async () => {
   ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
   ExecuteUserCreateDefect();
-
 
   // force: true
   // alter: true

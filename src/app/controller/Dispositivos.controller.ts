@@ -5,10 +5,10 @@ import Users from "../models/Users";
 import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import DetalleDispositivo from "../models/DetalleComponents";
-import { Console, error } from "console";
 import CreateNotify from "../utils/CreateNotify";
 import { generarCodigo } from "../utils/CodigoDisp";
-import { create } from "domain";
+import { Sucursales } from "../models";
+import { error } from "console";
 
 export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -53,14 +53,12 @@ export const CreateDisp = async (req: any, res: Response) => {
 
     if (!EmpresaBySucursal) return res.json({ search: false });
 
-
     const EmpresaSearch: any = await Sucursal.findOne({
       where: {
         nombre: sucursal,
       },
       include: [{ model: Empresa, where: { nombre: empresa } }],
     });
-   
 
     const { Ram_Modulos, Almacenamiento } = data;
     if (Ram_Modulos || Almacenamiento) {
@@ -70,20 +68,22 @@ export const CreateDisp = async (req: any, res: Response) => {
         Almacenamiento_canti: Almacenamiento.length,
         Almacenamiento_detalle: Almacenamiento,
       };
-     
 
-      if(data?.IdUser == "" || "null"){
+      if (data?.IdUser == "" || "null") {
         const CreateDisp: any = await Dispositivo.create({
           ...data,
           IdSucursal: EmpresaSearch?.id,
-          IdUser:null
+          IdUser: null,
         });
-        const codigo_dispositivo = generarCodigo(empresa,sucursal,CreateDisp.id)
+        const codigo_dispositivo = generarCodigo(
+          empresa,
+          sucursal,
+          CreateDisp.id
+        );
         await Dispositivo.update(
           { codigo_dispositivo },
           { where: { id: CreateDisp.id } }
         );
-      
 
         const CreatComponDisp = await DetalleDispositivo.create({
           IdDispositivo: CreateDisp.id,
@@ -92,12 +92,14 @@ export const CreateDisp = async (req: any, res: Response) => {
         });
 
         if (CreateDisp && CreatComponDisp) {
-          await CreateNotify(`Se ha creado un nuevo dispositivo en la empresa "${empresa}" y sucursal "${sucursal}". Detalles del dispositivo: Tipo: ${CreateDisp?.tipo}, Nombre: ${CreateDisp.nombre}.`, req.User?.nombre , req.User?.id);
+          await CreateNotify(
+            `Se ha creado un nuevo dispositivo en la empresa "${empresa}" y sucursal "${sucursal}". Detalles del dispositivo: Tipo: ${CreateDisp?.tipo}, Nombre: ${CreateDisp.nombre}.`,
+            req.User?.nombre,
+            req.User?.id
+          );
           return res.json({ create: true });
         }
       }
-      
-      
     }
 
     const respCreat: any = await Dispositivo.create({
@@ -106,13 +108,10 @@ export const CreateDisp = async (req: any, res: Response) => {
     });
     await DetalleDispositivo.create({ ...data, IdDispositivo: respCreat?.id });
     return res.json({ create: true });
-
-    console.log(CreateDisp);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
-
 
 export const GetsDispositivos = async (req: Request, res: Response) => {
   try {
@@ -144,10 +143,10 @@ export const UpdateDisp = async (req: any, res: Response) => {
     const { id } = req.params;
     const DatsNew = req.body;
 
-    const DataDispositivo:any = await Dispositivo.findByPk(id,{
-      include:[{model:Sucursal,include:[{model:Empresa}]}]
+    const DataDispositivo: any = await Dispositivo.findByPk(id, {
+      include: [{ model: Sucursal, include: [{ model: Empresa }] }],
     });
-    const DataDetalleDisp:any = await DetalleDispositivo.findOne({
+    const DataDetalleDisp: any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: id },
     });
     const CamposUpd: any = {};
@@ -157,7 +156,7 @@ export const UpdateDisp = async (req: any, res: Response) => {
       }
     }
 
-    if (!DatsNew.IdUser || DatsNew.IdUser === 'null') {
+    if (!DatsNew.IdUser || DatsNew.IdUser === "null") {
       CamposUpd.IdUser = null;
     }
 
@@ -177,11 +176,13 @@ export const UpdateDisp = async (req: any, res: Response) => {
       req.User?.nombre,
       req.User?.id
     );
-   
-    return res.json({ update:true , message: "Se actualizo correctamente" });
+
+    return res.json({ update: true, message: "Se actualizo correctamente" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: true, message: "Error al actualizar el dispositivo" });
+    return res
+      .status(500)
+      .json({ error: true, message: "Error al actualizar el dispositivo" });
   }
 };
 export const DeleteDisp = async (req: Request, res: Response) => {
@@ -215,7 +216,10 @@ export const GetsDispositivo = async (req: Request, res: Response) => {
       include: [{ model: DetalleDispositivo }, { model: Users }],
     });
     return res.json({ data: Exist });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.json(error);
+  }
 };
 
 export const GetsDispUsingUser = async (req: Request, res: Response) => {
@@ -247,5 +251,120 @@ export const GetsDispUsingUser = async (req: Request, res: Response) => {
     res.json(resp);
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const AuthDispAgent = async (req: Request, res: Response) => {
+  try {
+    const { TokenSucursal, IdDispositivo } = req.body;
+
+    const Busq: any = await Sucursales.findOne({
+      where: { Token: { [Op.eq]: TokenSucursal } },
+      include: [
+        {
+          model: Empresa,
+        },
+      ],
+    });
+
+    if (!Busq)
+      return res.json({ auth: false, message: "Error token de la sucursal" });
+    const CreateDisp: any = await Dispositivo.create({
+      estado: "Activo",
+      IdSucursal: Busq?.id,
+      Agent:true,
+    });
+    await CreateDisp.update({
+      codigo_dispositivo: generarCodigo(
+        Busq?.Empresa?.nombre,
+        Busq?.nombre,
+        CreateDisp.id
+      ),
+    });
+    return res.json({
+      auth: true,
+      message: `Token Correcto , Empresa : ${Busq?.Empresa?.nombre} | Sucursal : ${Busq?.nombre}}`,
+      Id: CreateDisp.id,
+      Data_empresa: {
+        Empresa: Busq?.Empresa?.nombre,
+        Sucursal: Busq?.nombre,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.json(error);
+  }
+};
+export const CreateDispAgent = async (req: Request, res: Response) => {
+  try {
+    const { IdDipositivo, ...datos } = req.body;
+
+    if (!IdDipositivo)
+      return res.json({ error: true, message: "Hubo un error" });
+
+    const Busq: any = await Dispositivo.findByPk(Number(IdDipositivo));
+    Busq?.update({
+      nombre: datos?.osInfo?.hostname,
+      tipo: datos?.battery?.hasBattery ? "Laptop" : "Pc",
+    });
+    const BusqDetalleComponent: any = await DetalleDispositivo.findOne({
+      where: { IdDispositivo: { [Op.eq]: IdDipositivo } },
+    });
+    const DataMemory = datos.memLayout.map((value: any, index: number) => {
+      const mhz = value.clockSpeed.toString();
+      const tipo = value.type;
+      const marca =
+        BusqDetalleComponent?.Ram_Modulos[index]?.marca ?? "Unknown";
+      return {
+        mhz: mhz,
+        tipo: tipo,
+        marca: marca,
+      };
+    });
+    const Datadisc = datos.blockDevices.map((value: any, index: number) => {
+      const gb = (value.size / Math.pow(1024, 3)).toFixed(2);
+      const tipo =
+        BusqDetalleComponent?.Almacenamiento_detalle[index]?.tipo ?? "";
+      const marca = value.serial;
+      return {
+        gb: `${gb} GB`,
+        tipo,
+        marca,
+      };
+    });
+    if (BusqDetalleComponent === null) {
+      await DetalleDispositivo.create({
+        IdDispositivo: IdDipositivo,
+        Config_mac: datos?.networkInterfaces[0]?.mac,
+        Config_ip: datos?.networkInterfaces[0]?.ip4,
+        Placa_detalle: datos?.baseboard.model,
+        Procesador_marca: datos?.cpu?.manufacturer,
+        Procesador_modelo: datos?.cpu?.brand,
+        Ram_cantidad: datos?.memLayout.length,
+        Ram_Modulos: DataMemory,
+        Almacenamiento_canti: datos.blockDevices.length,
+        Almacenamiento_detalle: Datadisc,
+        Tarjeta_Video: datos?.graphics.controllers[0].model,
+      });
+      return res.json({
+        message: `Dispositivo Actualizado Id:${IdDipositivo}`,
+      });
+    }
+    BusqDetalleComponent.update({
+      Config_mac: datos?.networkInterfaces[0]?.mac,
+      Config_ip: datos?.networkInterfaces[0]?.ip4,
+      Placa_modelo: BusqDetalleComponent.Placa_modelo,
+      Placa_detalle: datos?.baseboard.model,
+      Ram_cantidad: datos?.memLayout.length,
+      Ram_Modulos: DataMemory,
+      Almacenamiento_canti: datos.blockDevices.length,
+      Almacenamiento_detalle: Datadisc,
+      Tarjeta_Video: datos?.graphics.controllers[0].model,
+    });
+
+    res.json({ message: `Dispositivo Actualizado Id:${IdDipositivo}` });
+  } catch (error) {
+    console.log(error);
+    res.json(error);
   }
 };

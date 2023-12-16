@@ -7,8 +7,11 @@ const Dispositivo = sequelize.define("Dispositivo", {
     primaryKey: true,
     autoIncrement: true,
   },
-  codigo_dispositivo:{
-    type:DataType.STRING,
+  Agent: {
+    type: DataType.BOOLEAN,
+  },
+  codigo_dispositivo: {
+    type: DataType.STRING,
   },
   nombre: {
     type: DataType.STRING,
@@ -16,8 +19,8 @@ const Dispositivo = sequelize.define("Dispositivo", {
   tipo: {
     type: DataType.STRING,
   },
-  tipo_Disp:{
-    type:DataType.STRING
+  tipo_Disp: {
+    type: DataType.STRING,
   },
   marca: {
     type: DataType.STRING,
@@ -42,4 +45,3 @@ const Dispositivo = sequelize.define("Dispositivo", {
   },
 });
 export default Dispositivo;
-

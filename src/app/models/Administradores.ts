@@ -55,6 +55,9 @@ const Administradores = sequelize.define('Administradores',{
     },
     isActive:{
         type:DataType.BOOLEAN,  
+    },
+    estado:{
+        type:DataType.BOOLEAN
     }
     
     
