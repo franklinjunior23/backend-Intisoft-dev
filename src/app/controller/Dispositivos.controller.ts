@@ -272,7 +272,7 @@ export const AuthDispAgent = async (req: Request, res: Response) => {
     const CreateDisp: any = await Dispositivo.create({
       estado: "Activo",
       IdSucursal: Busq?.id,
-      Agent:true,
+      Agent: true,
     });
     await CreateDisp.update({
       codigo_dispositivo: generarCodigo(
@@ -283,7 +283,7 @@ export const AuthDispAgent = async (req: Request, res: Response) => {
     });
     return res.json({
       auth: true,
-      message: `Token Correcto , Empresa : ${Busq?.Empresa?.nombre} | Sucursal : ${Busq?.nombre}}`,
+      message: `Token Correcto , Empresa : ${Busq?.Empresa?.nombre} , Sucursal : ${Busq?.nombre}`,
       Id: CreateDisp.id,
       Data_empresa: {
         Empresa: Busq?.Empresa?.nombre,
@@ -310,28 +310,52 @@ export const CreateDispAgent = async (req: Request, res: Response) => {
     const BusqDetalleComponent: any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: { [Op.eq]: IdDipositivo } },
     });
+    const GraphisDats = datos.graphics.controllers.map(
+      (value: any,) => {
+        const bus = value.bus;
+        const vram = (value.vram) + "GB";
+        const modelo = value.model;
+        const detalle = value.vendor;
+        return {
+          bus,
+          vram,
+          modelo,
+          detalle,
+        };
+      }
+    );
     const DataMemory = datos.memLayout.map((value: any, index: number) => {
       const mhz = value.clockSpeed.toString();
       const tipo = value.type;
+      const serial = value.partNum;
+      const gb = value.size / Math.pow(1024, 3) + "GB";
       const marca =
         BusqDetalleComponent?.Ram_Modulos[index]?.marca ?? "Unknown";
       return {
         mhz: mhz,
         tipo: tipo,
         marca: marca,
+        serial,
+        gb,
       };
     });
-    const Datadisc = datos.blockDevices.map((value: any, index: number) => {
-      const gb = (value.size / Math.pow(1024, 3)).toFixed(2);
-      const tipo =
-        BusqDetalleComponent?.Almacenamiento_detalle[index]?.tipo ?? "";
-      const marca = value.serial;
-      return {
-        gb: `${gb} GB`,
-        tipo,
-        marca,
-      };
-    });
+    const Datadisc = datos.blockDevices
+      .filter((value: any) => value.physical !== "Removable")
+      .map((value: any, index: number) => {
+        const gb = (value.size / Math.pow(1024, 3)).toFixed(2);
+        const estado = value.physical;
+        const serial = value.serial;
+        const tipo =
+          BusqDetalleComponent?.Almacenamiento_detalle[index]?.tipo ?? "";
+        const marca = value.serial;
+        return {
+          gb: `${gb} GB`,
+          tipo,
+          marca,
+          estado,
+          serial,
+        };
+      });
     if (BusqDetalleComponent === null) {
       await DetalleDispositivo.create({
         IdDispositivo: IdDipositivo,
@@ -344,7 +368,7 @@ export const CreateDispAgent = async (req: Request, res: Response) => {
         Ram_Modulos: DataMemory,
         Almacenamiento_canti: datos.blockDevices.length,
         Almacenamiento_detalle: Datadisc,
-        Tarjeta_Video: datos?.graphics.controllers[0].model,
+        Tarjeta_Video: GraphisDats,
       });
       return res.json({
         message: `Dispositivo Actualizado Id:${IdDipositivo}`,
@@ -359,7 +383,7 @@ export const CreateDispAgent = async (req: Request, res: Response) => {
       Ram_Modulos: DataMemory,
       Almacenamiento_canti: datos.blockDevices.length,
       Almacenamiento_detalle: Datadisc,
-      Tarjeta_Video: datos?.graphics.controllers[0].model,
+      Tarjeta_Video: GraphisDats,
     });
 
     res.json({ message: `Dispositivo Actualizado Id:${IdDipositivo}` });
