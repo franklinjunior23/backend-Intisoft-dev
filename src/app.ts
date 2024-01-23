@@ -21,6 +21,9 @@ import SystemInfo from "./app/routes/SystemInfo.routes";
 import Notify_Routes from "./app/routes/Notification.routes";
 import handleSocketFunctions from "./app/utils/SocketIo";
 import Notifications_Routes from "./app/routes/Notifications/Notifications.routes";
+import getEmailsToUpdate from "./app/utils/Email/EmailBind";
+
+
 
 const app = express();
 
@@ -53,13 +56,13 @@ app.use(`${point_defect}/Notifications`, Notifications_Routes);
 
 io.on("connection", handleSocketFunctions);
 server.listen(puerto, async () => {
-  ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
-  ExecuteUserCreateDefect();
-
+  // ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
+  // ExecuteUserCreateDefect();
+  // await getEmailsToUpdate() // Ejecucion de guardar todos los datos en el campo email de la tabla Users
   // force: true
   // alter: true
   // para tener cambios , actualizacion de la bd /
   // await sequelize.sync({ alter: true });
 
-  console.log(`http://localhost:${puerto}/api`);
+  console.log(`http://localhost:${puerto}`);
 });

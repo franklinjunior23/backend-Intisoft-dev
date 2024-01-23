@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "tsc": "tsc",
-    "dev": "nodemon ./src/app.ts",
+    "build": "tsc",
+    "dev": "nodemon --exec ts-node ./src/app.ts",
     "start": "node ./dist/app.js"
   },
   "keywords": [],
@@ -26,6 +26,7 @@
     "@types/uuid": "^9.0.2",
     "@types/validator": "^13.9.0",
     "luxon": "^3.4.3",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6"
   },

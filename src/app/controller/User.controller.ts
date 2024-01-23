@@ -116,7 +116,7 @@ export const UpdateUserById = async (req: Request, res: Response) => {
     const NewDatos = req.body;
     const Exist: any = await Users.findByPk(id);
     const cambios: any = {};
-
+    console.log(id)
     if (!Exist) return res.json({ search: false });
 
     for (const CamposUpdate in NewDatos) {

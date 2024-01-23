@@ -21,6 +21,6 @@ DispostivoRoutes.post("/Agent/Auth", AuthDispAgent);
 DispostivoRoutes.post("/Agent", CreateDispAgent);
 DispostivoRoutes.post("/:empresa/:sucursal", ValidateUser, CreateDisp);
 DispostivoRoutes.put("/:id", ValidateUser, UpdateDisp);
-DispostivoRoutes.delete("/:id", DeleteDisp);
+DispostivoRoutes.delete("/:id",ValidateUser, DeleteDisp);
 
 export default DispostivoRoutes;
