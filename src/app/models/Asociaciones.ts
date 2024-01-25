@@ -1,6 +1,7 @@
 import { Ticket } from ".";
 import { sequelize } from "../config/database";
 import Administradores from "./Administradores";
+import Area from "./Area";
 import DetalleDispositivo from "./DetalleComponents";
 import Dispositivo from "./Dispositvo";
 import Empresa from "./Empresa";
@@ -135,7 +136,7 @@ try {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
   });
-//Notification and Notification_read
+  //Notification and Notification_read
   Notifications.hasMany(Notifications_read, {
     foreignKey: "Notification_id",
     onUpdate: "CASCADE",
@@ -148,6 +149,15 @@ try {
     onDelete: "CASCADE",
   });
 
+  Users.belongsToMany(Area, { through: "UsuarioArea" });
+  Area.belongsToMany(Users, { through: "UsuarioArea" });
+
+  Users.belongsToMany(Dispositivo, { through: "UsuarioDispositivo" });
+  Dispositivo.belongsToMany(Users, { through: "UsuarioDispositivo" });
+
+  Area.belongsToMany(Dispositivo, { through: "AreaDispositivo" });
+  Dispositivo.belongsToMany(Area, { through: "AreaDispositivo" });
+  
 } catch (error) {
   console.log("asociaciones : " + error);
 }
