@@ -7,8 +7,7 @@ import Empresa from "../models/Empresa";
 import DetalleDispositivo from "../models/DetalleComponents";
 import CreateNotify from "../utils/CreateNotify";
 import { generarCodigo } from "../utils/CodigoDisp";
-import { Sucursales } from "../models";
-import { error } from "console";
+import { Area, Sucursales } from "../models";
 
 export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -144,11 +143,25 @@ export const UpdateDisp = async (req: any, res: Response) => {
     const DatsNew = req.body;
 
     const DataDispositivo: any = await Dispositivo.findByPk(id, {
-      include: [{ model: Sucursal, include: [{ model: Empresa }] }],
+      include: [
+        { model: Sucursal, include: [{ model: Empresa }] },
+        {
+          model: Area,
+          through: {
+            attributes: [],
+          },
+        },
+      ],
     });
     const DataDetalleDisp: any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: id },
     });
+
+    if (DataDispositivo.Areas.length == 0 && DatsNew.FormArea) {
+      const Areas: any = await Area.findByPk(DatsNew.IdArea);
+      await Areas.addDispositivo(DataDispositivo.id);
+    }
+
     const CamposUpd: any = {};
     for (const CampUpdate in DatsNew) {
       if (DataDispositivo[CampUpdate] !== DatsNew[CampUpdate]) {
@@ -213,7 +226,16 @@ export const GetsDispositivo = async (req: Request, res: Response) => {
       where: {
         id,
       },
-      include: [{ model: DetalleDispositivo }, { model: Users }],
+      include: [
+        { model: DetalleDispositivo },
+        { model: Users },
+        {
+          model: Area,
+          through: {
+            attributes: [],
+          },
+        },
+      ],
     });
     return res.json({ data: Exist });
   } catch (error) {
@@ -310,20 +332,18 @@ export const CreateDispAgent = async (req: Request, res: Response) => {
     const BusqDetalleComponent: any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: { [Op.eq]: IdDipositivo } },
     });
-    const GraphisDats = datos.graphics.controllers.map(
-      (value: any,) => {
-        const bus = value.bus;
-        const vram = (value.vram) + "GB";
-        const modelo = value.model;
-        const detalle = value.vendor;
-        return {
-          bus,
-          vram,
-          modelo,
-          detalle,
-        };
-      }
-    );
+    const GraphisDats = datos.graphics.controllers.map((value: any) => {
+      const bus = value.bus;
+      const vram = value.vram + "GB";
+      const modelo = value.model;
+      const detalle = value.vendor;
+      return {
+        bus,
+        vram,
+        modelo,
+        detalle,
+      };
+    });
     const DataMemory = datos.memLayout.map((value: any, index: number) => {
       const mhz = value.clockSpeed.toString();
       const tipo = value.type;

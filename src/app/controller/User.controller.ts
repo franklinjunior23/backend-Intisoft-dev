@@ -1,9 +1,9 @@
-import { Model, Op } from "sequelize";
-import Empresa from "../models/Empresa";
+import {  Op } from "sequelize";
+
 import { Request, Response } from "express";
-import Sucursal from "../models/Sucursales";
-import Users from "../models/Users";
-import Dispositivo from "../models/Dispositvo";
+
+import {Dispositvo,Area,Users,Sucursales,Empresa} from "../models";
+
 
 export const GetUsersByEmpresaAndSucursal = async (
   req: Request,
@@ -15,7 +15,7 @@ export const GetUsersByEmpresaAndSucursal = async (
     const UserData: any = await Users.findAll({
       include: [
         {
-          model: Sucursal,
+          model: Sucursales,
           where: {
             nombre: { [Op.eq]: sucursal },
           },
@@ -29,7 +29,7 @@ export const GetUsersByEmpresaAndSucursal = async (
           ],
         },
         {
-          model: Dispositivo,
+          model: Dispositvo,
         },
       ],
     });
@@ -42,7 +42,7 @@ export const CreateUserBySucursal = async (req: Request, res: Response) => {
   try {
     const { empresa, sucursal } = req.params;
     const datoUser = req.body;
-    const resSuc: any = await Sucursal.findOne({
+    const resSuc: any = await Sucursales.findOne({
       where: {
         nombre: {
           [Op.eq]: sucursal,
@@ -79,7 +79,7 @@ export const GetUserById = async (req: Request, res: Response) => {
       },
       include: [
         {
-          model: Dispositivo,
+          model: Dispositvo,
         },
       ],
     });
@@ -132,11 +132,10 @@ export const UpdateUserById = async (req: Request, res: Response) => {
 export const GetsUserDisp = async (req: Request, res: Response) => {
   try {
     const { empresa, sucursal } = req.query;
-    console.log("llego")
     const resp = await Users.findAll({
       include: [
         {
-          model: Sucursal,
+          model: Sucursales,
           where: {
             nombre: sucursal,
           },
@@ -150,7 +149,10 @@ export const GetsUserDisp = async (req: Request, res: Response) => {
           ],
         },
         {
-            model:Dispositivo
+            model:Dispositvo
+        },
+        {
+          model:Area
         }
       ],
     });

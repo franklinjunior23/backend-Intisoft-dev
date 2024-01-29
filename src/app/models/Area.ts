@@ -5,7 +5,7 @@ const Area = sequelize.define(
   "Areas",
   {
     id: {
-      type: DataType.NUMBER,
+      type: DataType.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -23,10 +23,9 @@ const Area = sequelize.define(
   {
     paranoid: true,
     defaultScope: {
-      where: {
-        deletedAt: null,
+        attributes: { exclude: ['deletedAt'] },
+       
       },
-    },
   }
 );
 export default Area;

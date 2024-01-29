@@ -35,12 +35,12 @@ try {
   // USERS ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
   Sucursal.hasMany(Users, {
     foreignKey: "IdSucursal",
+    onUpdate: "SET NULL", // Establecerá a NULL si se actualiza la Sucursal
+    onDelete: "SET NULL",
   });
   Users.belongsTo(Sucursal, {
     foreignKey: "IdSucursal",
     targetKey: "id",
-    onUpdate: "SET NULL", // Establecerá a NULL si se actualiza la Sucursal
-    onDelete: "SET NULL",
   });
 
   // Dispositivo ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
@@ -145,10 +145,8 @@ try {
   Notifications_read.belongsTo(Notifications, {
     foreignKey: "Notification_id",
     targetKey: "id",
-    onUpdate: "CASCADE",
-    onDelete: "CASCADE",
   });
-
+  Area.belongsTo(Sucursal);
   Users.belongsToMany(Area, { through: "UsuarioArea" });
   Area.belongsToMany(Users, { through: "UsuarioArea" });
 
@@ -157,7 +155,6 @@ try {
 
   Area.belongsToMany(Dispositivo, { through: "AreaDispositivo" });
   Dispositivo.belongsToMany(Area, { through: "AreaDispositivo" });
-  
 } catch (error) {
   console.log("asociaciones : " + error);
 }

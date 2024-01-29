@@ -10,3 +10,4 @@ export { default as Sucursales } from './Sucursales';
 export { default as SuportDocs } from './SuportDocs';
 export { default as Ticket } from './Ticket';
 export { default as Users } from './Users';
+export { default as Area } from './Area';

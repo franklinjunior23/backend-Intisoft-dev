@@ -18,6 +18,9 @@ export const sequelize = new Sequelize(
     port: Number(process.env.PORT) || 3306,
     dialect:
       "mysql" /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */,
+    dialectOptions: {
+      // timezone: "America/Lima" // Establecer la zona horaria predeterminada
+    },
   }
 );
 
