@@ -7,10 +7,11 @@ import "dotenv/config";
 import Roles from "../models/Roles";
 import bcrypt from "bcrypt";
 
+
 export const SignIn = async (req: Request, res: Response) => {
   try {
     const { usuario, contraseña } = req.body;
-    
+
     const buscar: any = await Administradores.findOne({
       where: { usuario: { [Op.eq]: usuario } },
       attributes: ["nombre", "apellido", "contraseña", "id"], // Selecciona los atributos que necesitas
@@ -24,8 +25,7 @@ export const SignIn = async (req: Request, res: Response) => {
     const VerifyPass = await bcrypt.compare(contraseña, buscar.contraseña);
 
     if (!buscar || !VerifyPass) {
-
-      return res.json({ loged: false , message: "Usuario Incorrecto" });
+      return res.json({ loged: false, message: "Usuario Incorrecto" });
     }
     const user = {
       nombre: buscar.nombre,
@@ -34,9 +34,21 @@ export const SignIn = async (req: Request, res: Response) => {
     };
     const token_user = jwt.sign(
       { datos: buscar },
-      process.env.SECRET_KEY_JWT || 'z2hk1OWGrBln30hwWnX3y'
+      process.env.SECRET_KEY_JWT || "z2hk1OWGrBln30hwWnX3y"
     );
-    return res.json({ loged: true, token_user, user });
+    // const Serialize = serialize("_AuthUser", token_user, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "none",
+    //   path: "/",
+    // });
+    // res.cookie("_AuthUser", token_user,{
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: "lax",
+    //   path: "/",
+    // });
+    res.cookie("AuthUser", token_user).json({ loged: true, token_user, user });
   } catch (error) {
     console.log(error);
     res.json({

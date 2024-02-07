@@ -3,4 +3,4 @@ node_modules
 .env.prod
 /.prod.env
 src/app/config/database.ts
-public
+./public/**

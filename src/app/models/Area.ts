@@ -23,9 +23,8 @@ const Area = sequelize.define(
   {
     paranoid: true,
     defaultScope: {
-        attributes: { exclude: ['deletedAt'] },
-       
-      },
+      attributes: { exclude: ["deletedAt"] },
+    },
   }
 );
 export default Area;

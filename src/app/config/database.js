@@ -21,6 +21,7 @@ export const sequelize = new Sequelize(
     dialectOptions: {
       // timezone: "America/Lima" // Establecer la zona horaria predeterminada
     },
+  
   }
 );
 
