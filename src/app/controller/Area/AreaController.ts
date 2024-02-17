@@ -1,4 +1,4 @@
-import { Area, Dispositvo, Empresa, Sucursales, Users } from "../../models";
+import { Area, Dispositivo, Empresa, Sucursales, Users } from "../../models";
 import { Request, Response } from "express";
 import { CreateArea } from "./dto/CreateArea.dto";
 import { GetIdBranch } from "./utils";
@@ -82,7 +82,7 @@ export async function GetsAreas(Req: Request, Res: Response) {
 
   const AreasData = await Area.findAll({
     where: {SucursaleId:{[Op.eq]:SucursaleId}},
-    attributes: ["name", "id", "createdAt"],
+    attributes: ["name", "id"],
     order:[['createdAt','DESC']]
   });
   return Res.json({

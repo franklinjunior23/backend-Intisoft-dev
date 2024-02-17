@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import Sucursal from "../models/Sucursales";
 import Empresa from "../models/Empresa";
 import { FechaActually } from "../utils/DateFecha";
-import { Dispositvo, Users } from "../models";
+import { Dispositivo, Users } from "../models";
 import CreateNotify from "../utils/CreateNotify";
 
 export async function GetAllTickets(req: Request, res: Response) {
@@ -25,7 +25,7 @@ export async function GetAllTickets(req: Request, res: Response) {
           attributes: ["nombre", "id"],
           include: [
             { model: Users, attributes: ["nombre", "apellido", "id"] },
-            { model: Dispositvo, attributes: ["nombre", "id"] },
+            { model: Dispositivo, attributes: ["nombre", "id"] },
           ],
         },
       ],

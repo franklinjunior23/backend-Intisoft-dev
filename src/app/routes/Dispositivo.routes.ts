@@ -3,6 +3,7 @@ import {
   AuthDispAgent,
   CreateDisp,
   CreateDispAgent,
+  DeleteAreaforDevice,
   DeleteDisp,
   GetPcYLap,
   GetsDispUsingUser,
@@ -21,6 +22,7 @@ DispostivoRoutes.post("/Agent/Auth", AuthDispAgent);
 DispostivoRoutes.post("/Agent", CreateDispAgent);
 DispostivoRoutes.post("/:empresa/:sucursal", ValidateUser, CreateDisp);
 DispostivoRoutes.put("/:id", ValidateUser, UpdateDisp);
-DispostivoRoutes.delete("/:id",ValidateUser, DeleteDisp);
+DispostivoRoutes.delete("/area/:id", DeleteAreaforDevice);
+DispostivoRoutes.delete("/:id", ValidateUser, DeleteDisp);
 
 export default DispostivoRoutes;

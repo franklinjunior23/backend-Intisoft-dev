@@ -7,7 +7,6 @@ import "dotenv/config";
 import Roles from "../models/Roles";
 import bcrypt from "bcrypt";
 
-
 export const SignIn = async (req: Request, res: Response) => {
   try {
     const { usuario, contraseña } = req.body;

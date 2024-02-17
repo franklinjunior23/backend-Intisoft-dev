@@ -1,6 +1,6 @@
 export { default as Administradores } from './Administradores';
 export { default as DetalleComponents } from './DetalleComponents';
-export { default as Dispositvo } from './Dispositvo';
+export { default as Dispositivo } from './Dispositvo';
 export { default as Empresa } from './Empresa';
 export { default as Informes } from './Informes';
 export { default as Notification_read } from './Notification_read';

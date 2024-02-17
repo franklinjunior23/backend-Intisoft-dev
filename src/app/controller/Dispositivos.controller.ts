@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import Dispositivo from "../models/Dispositvo";
+
 import { Request, Response } from "express";
 import Users from "../models/Users";
 import Sucursal from "../models/Sucursales";
@@ -7,7 +7,7 @@ import Empresa from "../models/Empresa";
 import DetalleDispositivo from "../models/DetalleComponents";
 import CreateNotify from "../utils/CreateNotify";
 import { generarCodigo } from "../utils/CodigoDisp";
-import { Area, Sucursales } from "../models";
+import { Area, Sucursales, Dispositivo } from "../models";
 
 export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -412,3 +412,23 @@ export const CreateDispAgent = async (req: Request, res: Response) => {
     res.json(error);
   }
 };
+
+export async function DeleteAreaforDevice(req: Request, Res: Response) {
+  const IdDevice = req.params.id;
+  const IdArea = req.query.area;
+
+  // Buscar el dispositivo por su ID
+  const device = await Dispositivo.findByPk(Number(IdDevice));
+
+  // Buscar el área por su ID
+  const area: any = await Area.findByPk(Number(IdArea));
+
+  if (!device || !area) {
+    return Res.status(404).json({ error: "Dispositivo o Área no encontrados" });
+  }
+
+  // Desvincular el dispositivo del área
+  await area.removeDispositivos(device);
+
+  return Res.json({ message: "Dispositivo Desvinculado de la area" });
+}
