@@ -317,6 +317,9 @@ export const AuthDispAgent = async (req: Request, res: Response) => {
     res.json(error);
   }
 };
+export const ResolveAuthDeviceAgent=async(req:Request,res:Response)=>{
+  const {CodDevice} = req.body
+}
 export const CreateDispAgent = async (req: Request, res: Response) => {
   try {
     const { IdDipositivo, ...datos } = req.body;
