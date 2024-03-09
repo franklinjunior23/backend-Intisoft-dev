@@ -247,7 +247,9 @@ export const GetsDispositivo = async (req: Request, res: Response) => {
         {
           model: History_device,
           as: "historial",
+          separate: true,
           order: [["createdAt", "DESC"]],
+          
         },
         {
           model: Area,

@@ -11,15 +11,7 @@ export const SignIn = async (req: Request, res: Response) => {
   try {
     const { usuario, contraseña } = req.body;
 
-    if (!usuario)
-      return res.json({
-        message: "User Incorrect data",
-      });
-
-    if (!contraseña)
-      return res.json({
-        message: "User Incorrect data",
-      });
+    
     const buscar: any = await Administradores.findOne({
       where: { usuario: { [Op.eq]: usuario } },
       attributes: ["nombre", "apellido", "contraseña", "id"], // Selecciona los atributos que necesitas

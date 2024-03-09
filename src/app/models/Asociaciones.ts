@@ -177,7 +177,7 @@ try {
   History_device.belongsTo(Dispositivo, {
     foreignKey: "device",
     targetKey: "id",
-    as: "device", // Alias para la relación
+    as: "device_data", // Alias para la relación
   });
 } catch (error) {
   console.log("asociaciones : " + error);
