@@ -1,5 +1,13 @@
 node_modules
-.env
-/.prod.env
+dist
+.env.prod
+.prod.env
 src/app/config/database.ts
+./public/**
+./dist/** 
+.env
 
+
+#Docker Compose
+
+mysql

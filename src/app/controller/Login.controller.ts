@@ -11,6 +11,15 @@ export const SignIn = async (req: Request, res: Response) => {
   try {
     const { usuario, contraseña } = req.body;
 
+    if (!usuario)
+      return res.json({
+        message: "User Incorrect data",
+      });
+
+    if (!contraseña)
+      return res.json({
+        message: "User Incorrect data",
+      });
     const buscar: any = await Administradores.findOne({
       where: { usuario: { [Op.eq]: usuario } },
       attributes: ["nombre", "apellido", "contraseña", "id"], // Selecciona los atributos que necesitas
@@ -20,12 +29,11 @@ export const SignIn = async (req: Request, res: Response) => {
           attributes: ["nombre"], // Selecciona los atributos de Roles que necesitas,
         },
       ],
-    });
-    const VerifyPass = await bcrypt.compare(contraseña, buscar.contraseña);
+    })
+    const VerifyPass = await bcrypt.compare(contraseña, buscar?.contraseña);
 
     if (!buscar || !VerifyPass) {
-
-      return res.json({ loged: false , message: "Usuario Incorrecto" });
+      return res.json({ loged: false, message: "Usuario Incorrecto" });
     }
     const user = {
       nombre: buscar.nombre,
@@ -34,15 +42,27 @@ export const SignIn = async (req: Request, res: Response) => {
     };
     const token_user = jwt.sign(
       { datos: buscar },
-      process.env.SECRET_KEY_JWT || 'z2hk1OWGrBln30hwWnX3y'
+      process.env.SECRET_KEY_JWT || "z2hk1OWGrBln30hwWnX3y"
     );
-    return res.json({ loged: true, token_user, user });
-  } catch (error) {
-    console.log(error);
+    // const Serialize = serialize("_AuthUser", token_user, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "none",
+    //   path: "/",
+    // });
+    // res.cookie("_AuthUser", token_user,{
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: "lax",
+    //   path: "/",
+    // });
+    res.cookie("AuthUser", token_user).json({ loged: true, token_user, user });
+  } catch (error: any) {
+    console.log(error?.message);
     res.json({
       error: true,
       message: "Error En el servidor, comuniquese con el Administrador",
-      messageError: error,
+      messageError: error?.message,
     });
   }
 };

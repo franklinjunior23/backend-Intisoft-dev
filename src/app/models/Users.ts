@@ -48,6 +48,9 @@ const Users = sequelize.define("Users", {
   email_tip: {
     type: DataType.STRING,
   },
+  email: {
+    type: DataType.JSON,
+  },
   email_dirrecion: {
     type: DataType.STRING,
   },

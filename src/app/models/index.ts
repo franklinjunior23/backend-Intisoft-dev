@@ -1,0 +1,13 @@
+export { default as Administradores } from './Administradores';
+export { default as DetalleComponents } from './DetalleComponents';
+export { default as Dispositivo } from './Dispositvo';
+export { default as Empresa } from './Empresa';
+export { default as Informes } from './Informes';
+export { default as Notification_read } from './Notification_read';
+export { default as Notifications } from './Notifications';
+export { default as Roles } from './Roles';
+export { default as Sucursales } from './Sucursales';
+export { default as SuportDocs } from './SuportDocs';
+export { default as Ticket } from './Ticket';
+export { default as Users } from './Users';
+export { default as Area } from './Area';

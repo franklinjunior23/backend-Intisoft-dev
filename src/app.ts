@@ -2,53 +2,56 @@ import express from "express";
 import cors from "cors";
 import "./app/models/Asociaciones";
 import "dotenv/config";
-import { sequelize } from "./app/config/database";
-import Login from "./app/routes/Login.routes";
-import { ExecuteRoles } from "./app/seeds/RolesPredet.seed";
 import swaggerUi from "swagger-ui-express";
+import handleSocketFunctions from "./app/utils/SocketIo";
 import specs from "./docs/Swagger";
-
-import EmpresasRoutes from "./app/routes/Empresas.routes";
-import Sucursales_endpoint from "./app/routes/Sucursales.routes";
-import UserRoutes from "./app/routes/Users.routes";
-import DispostivoRoutes from "./app/routes/Dispositivo.routes";
-import informesRoutes from "./app/routes/Informes.routes";
-import TicketsRoutes from "./app/routes/Tickets.routes";
-import BaseConocimientos from "./app/routes/BaseConocimientos.routes";
-import { ExecuteUserCreateDefect } from "./app/seeds/UserDefect";
+import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
+import RoutesExpress from "./routes";
+import getEmailsToUpdate from "./app/utils/Email/EmailBind";
+import { ExecuteUserCreateDefect } from "./app/seeds/UserDefect";
+import { sequelize } from "./app/config/database";
+
+import { ExecuteRoles } from "./app/seeds/RolesPredet.seed";
 
 const app = express();
+
+const server = require("http").Server(app);
+export const io = new Server(server, { cors: { origin: "*" } });
 const puerto = process.env.PORT || 3000;
-const point_defect = process.env.POINT || "/api/v1";
 app.use(
   cors({
-    origin: "*",
+    credentials: true,
+    origin: ["http://localhost:5173",true],
   })
 );
-app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser());
+
+
+
 // documentacion for Swagger Ui
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(express.static("public"));
-// RouteS
-app.use(`${point_defect}/auth/Login`, Login);
-app.use(`${point_defect}/Empresas`, EmpresasRoutes);
-app.use(`${point_defect}/Sucursales`, Sucursales_endpoint);
-app.use(`${point_defect}/Users`, UserRoutes);
-app.use(`${point_defect}/Dispositivos`, DispostivoRoutes);
-app.use(`${point_defect}/Informes`, informesRoutes);
-app.use(`${point_defect}/Tickets`, TicketsRoutes);
-app.use(`${point_defect}/BaseConocimiento`, BaseConocimientos);
 
-app.listen(puerto, async () => {
-  ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
-  ExecuteUserCreateDefect();
+/**
+ * Routes More
+ * Different Routes of Express for the aplicacion
+ *
+ * */
+app.use(RoutesExpress);
 
-  // force: true
-  // alter: true
+io.on("connection", handleSocketFunctions);
+server.listen(puerto, async () => {
+  
+  
+  // ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
+  // ExecuteUserCreateDefect();
+  // await getEmailsToUpdate() // Ejecucion de guardar todos los datos en el campo email de la tabla Users
+    // force: true
+    // alter: true
   // para tener cambios , actualizacion de la bd /
-  await sequelize.sync({  alter: true });
+  //await sequelize.sync({ alter: true });
 
-  console.log(`http://localhost:${puerto}/api`);
+  console.log(`http://localhost:${puerto}`);
 });

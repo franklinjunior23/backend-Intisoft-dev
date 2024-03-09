@@ -10,7 +10,7 @@ export async function ValidateSoporteToken(
   const tokenUser = req.header(String(process.env.VALIDATION_HEADER));
   if (!tokenUser) return res.status(401).json({ message: "Token not provided" });
     const Cokie = req.cookies
-    console.log(Cokie)
+   
   try {
     const Decoded = await jwt.verify(
       tokenUser,
