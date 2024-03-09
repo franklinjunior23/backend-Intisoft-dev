@@ -1,5 +1,4 @@
 import { Op } from "sequelize";
-
 import { Request, Response } from "express";
 import Users from "../models/Users";
 import Sucursal from "../models/Sucursales";
@@ -8,6 +7,7 @@ import DetalleDispositivo from "../models/DetalleComponents";
 import CreateNotify from "../utils/CreateNotify";
 import { generarCodigo } from "../utils/CodigoDisp";
 import { Area, Sucursales, Dispositivo } from "../models";
+import History_device from "../models/history-device";
 
 export const GetPcYLap = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -140,9 +140,9 @@ export const GetsDispositivos = async (req: Request, res: Response) => {
 export const UpdateDisp = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
-    const DatsNew = req.body;
+    const newDeviceData = req.body;
 
-    const DataDispositivo: any = await Dispositivo.findByPk(id, {
+    const deviceData: any = await Dispositivo.findByPk(id, {
       include: [
         { model: Sucursal, include: [{ model: Empresa }] },
         {
@@ -153,39 +153,54 @@ export const UpdateDisp = async (req: any, res: Response) => {
         },
       ],
     });
-    const DataDetalleDisp: any = await DetalleDispositivo.findOne({
+
+    if (!deviceData) {
+      return res.status(404).json({ error: true, message: "Dispositivo no encontrado" });
+    }
+
+    const deviceDetailsData: any = await DetalleDispositivo.findOne({
       where: { IdDispositivo: id },
     });
 
-    if (DataDispositivo.Areas.length == 0 && DatsNew.FormArea) {
-      const Areas: any = await Area.findByPk(DatsNew.IdArea);
-      await Areas.addDispositivo(DataDispositivo.id);
+    if (newDeviceData?.isHistoryDevice) {
+      const newHistory = await History_device.create({
+        action: newDeviceData?.dataHistory,
+        device: id,
+      });
     }
 
-    const CamposUpd: any = {};
-    for (const CampUpdate in DatsNew) {
-      if (DataDispositivo[CampUpdate] !== DatsNew[CampUpdate]) {
-        CamposUpd[CampUpdate] = DatsNew[CampUpdate];
+    if (deviceData.Areas.length == 0 && newDeviceData.FormArea) {
+      const area: any = await Area.findByPk(newDeviceData.IdArea);
+      if (area) {
+        await area.addDispositivo(deviceData.id);
       }
     }
 
-    if (!DatsNew.IdUser || DatsNew.IdUser === "null") {
-      CamposUpd.IdUser = null;
-    }
-
-    await DataDispositivo.update(CamposUpd);
-
-    const Campos: any = {};
-    for (const CampUpdate in DatsNew) {
-      if (DataDetalleDisp[CampUpdate] !== DatsNew[CampUpdate]) {
-        Campos[CampUpdate] = DatsNew[CampUpdate];
+    const updatedFields: any = {};
+    for (const field in newDeviceData) {
+      if (deviceData[field] !== newDeviceData[field]) {
+        updatedFields[field] = newDeviceData[field];
       }
     }
 
-    Campos.Almacenamiento_detalle = Campos.Almacenamiento;
-    await DataDetalleDisp.update(Campos);
+    if (!newDeviceData.IdUser || newDeviceData.IdUser === "null") {
+      updatedFields.IdUser = null;
+    }
+
+    await deviceData.update(updatedFields);
+
+    const detailFields: any = {};
+    for (const field in newDeviceData) {
+      if (deviceDetailsData[field] !== newDeviceData[field]) {
+        detailFields[field] = newDeviceData[field];
+      }
+    }
+
+    detailFields.Almacenamiento_detalle = detailFields.Almacenamiento_detalle;
+    await deviceDetailsData.update(detailFields);
+
     await CreateNotify(
-      `Se ha actualizado el dispositivo "${DataDispositivo?.nombre}" de la empresa ${DataDispositivo?.Sucursale.Empresa.nombre} y sucursal ${DataDispositivo?.Sucursale.nombre}`,
+      `Se ha actualizado el dispositivo "${deviceData?.nombre}" de la empresa ${deviceData?.Sucursale.Empresa.nombre} y sucursal ${deviceData?.Sucursale.nombre}`,
       req.User?.nombre,
       req.User?.id
     );
@@ -221,7 +236,7 @@ export const DeleteDisp = async (req: Request, res: Response) => {
 export const GetsDispositivo = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    console.log(id);
+
     const Exist = await Dispositivo.findOne({
       where: {
         id,
@@ -229,6 +244,11 @@ export const GetsDispositivo = async (req: Request, res: Response) => {
       include: [
         { model: DetalleDispositivo },
         { model: Users },
+        {
+          model: History_device,
+          as: "historial",
+          order: [["createdAt", "DESC"]],
+        },
         {
           model: Area,
           through: {
@@ -317,9 +337,9 @@ export const AuthDispAgent = async (req: Request, res: Response) => {
     res.json(error);
   }
 };
-export const ResolveAuthDeviceAgent=async(req:Request,res:Response)=>{
-  const {CodDevice} = req.body
-}
+export const ResolveAuthDeviceAgent = async (req: Request, res: Response) => {
+  const { CodDevice } = req.body;
+};
 export const CreateDispAgent = async (req: Request, res: Response) => {
   try {
     const { IdDipositivo, ...datos } = req.body;

@@ -81,12 +81,12 @@ export async function GetsAreas(Req: Request, Res: Response) {
   });
 
   const AreasData = await Area.findAll({
-    where: {SucursaleId:{[Op.eq]:SucursaleId}},
+    where: { SucursaleId: { [Op.eq]: SucursaleId } },
     attributes: ["name", "id"],
-    order:[['createdAt','DESC']]
+    order: [["createdAt", "DESC"]],
   });
   return Res.json({
-    body:AreasData,
+    body: AreasData,
   });
   // Resto del código...
 }

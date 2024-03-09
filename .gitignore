@@ -5,3 +5,7 @@ node_modules
 src/app/config/database.ts
 ./public/**
 ./dist/** 
+
+#Docker Compose
+
+mysql

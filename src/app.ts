@@ -40,16 +40,18 @@ app.use(express.static("public"));
  *
  * */
 app.use(RoutesExpress);
-// ****************************
+
 io.on("connection", handleSocketFunctions);
 server.listen(puerto, async () => {
+  
+  
   // ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
   // ExecuteUserCreateDefect();
   // await getEmailsToUpdate() // Ejecucion de guardar todos los datos en el campo email de la tabla Users
-  // force: true
-  // alter: true
+    // force: true
+    // alter: true
   // para tener cambios , actualizacion de la bd /
-  // await sequelize.sync({ alter: true });
+  //await sequelize.sync({ alter: true });
 
   console.log(`http://localhost:${puerto}`);
 });

@@ -12,6 +12,7 @@ import Roles from "./Roles";
 import Sucursal from "./Sucursales";
 import Tikets from "./Ticket";
 import Users from "./Users";
+import History_device from "./history-device";
 
 try {
   // ROLES ASOCIACIONES DE UNO A MUCHOS ES DECIR ( UN SOLO //  ROL PUEDE TENER VARIAS PERSONAS )
@@ -66,9 +67,20 @@ try {
     onUpdate: "SET NULL", // Establecerá a NULL si se actualiza la Sucursal
     onDelete: "SET NULL",
   });
+/**
+ * 
+  Dispositivo.hasOne(DetalleDispositivo, {
+    as: "component",
+  });
+  DetalleDispositivo.belongsTo(Dispositivo, {
+    as: "dispositivo",
+  });
 
-  Dispositivo.hasMany(DetalleDispositivo, {
+ */
+ 
+  Dispositivo.hasOne(DetalleDispositivo, {
     foreignKey: "IdDispositivo",
+    //as:'component',
     onUpdate: "CASCADE", // Establecerá a NULL si se actualiza la Sucursal
     onDelete: "CASCADE", // Establecerá a NULL si se elimina la Sucursal
   });
@@ -155,6 +167,18 @@ try {
 
   Area.belongsToMany(Dispositivo, { through: "AreaDispositivo" });
   Dispositivo.belongsToMany(Area, { through: "AreaDispositivo" });
+
+  Dispositivo.hasMany(History_device, {
+    foreignKey: "device", // El campo que actúa como clave foránea en HistoryDevice
+    sourceKey: "id", // El campo en Dispositivo que se relaciona con la clave foránea
+    as: "historial", // Alias para la relación
+  });
+
+  History_device.belongsTo(Dispositivo, {
+    foreignKey: "device",
+    targetKey: "id",
+    as: "device", // Alias para la relación
+  });
 } catch (error) {
   console.log("asociaciones : " + error);
 }
