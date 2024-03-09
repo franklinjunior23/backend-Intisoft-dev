@@ -1,10 +1,11 @@
 node_modules
-.env
+dist
 .env.prod
 .prod.env
 src/app/config/database.ts
 ./public/**
 ./dist/** 
+
 
 #Docker Compose
 
