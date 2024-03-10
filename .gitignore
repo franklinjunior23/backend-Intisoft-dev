@@ -2,7 +2,6 @@ node_modules
 dist
 .env.prod
 .prod.env
-src/app/config/database.ts
 ./public/**
 ./dist/** 
 .env
