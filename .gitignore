@@ -4,6 +4,6 @@ dist
 .prod.env
 ./public/**
 ./dist/** 
-.env
+
 #Docker Compose
 mysql
