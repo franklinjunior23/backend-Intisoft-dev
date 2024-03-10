@@ -29,5 +29,5 @@ jobs:
       - run: npm i
       - run: npm run build --if-present
       - run: mkdir -p public/images
-      - run: rsync -av  /home/frankbackend/htdocs/dev.intisoft.com.pe/back_typscript_roy/public/ /home/frankbackend/htdocs/dev.intisoft.com.pe/actionsrunner/prodintisoftdev/back_typscript_roy/back_typscript_roy/public/
+      - run: rsync -av --no-relative --delete /home/frankbackend/htdocs/dev.intisoft.com.pe/back_typscript_roy/public/ /home/frankbackend/htdocs/dev.intisoft.com.pe/actionsrunner/prodintisoftdev/back_typscript_roy/back_typscript_roy/public/
       - run: pm2 reload 1
