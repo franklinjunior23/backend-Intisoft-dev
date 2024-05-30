@@ -1,5 +1,4 @@
 import { Optional } from "sequelize";
-import { sequelize } from "../config/database";
 import {
   BelongsTo,
   Column,
@@ -8,7 +7,6 @@ import {
   Model,
   Table,
 } from "sequelize-typescript";
-import { v4 as uuidv4 } from "uuid";
 import FolderKnowledge from "./FolderKnowledge";
 
 type knowledgeAtributtes = {
@@ -85,38 +83,3 @@ class Knowledge extends Model<knowledgeAtributtes, KnowledgeCreation> {
   declare folder: FolderKnowledge;
 }
 export default Knowledge;
-
-// export const SuportDocs = sequelize.define("suportDocs", {
-//   id: {
-//     type: DataType.UUID,
-//     defaultValue: uuidv4,
-//     primaryKey: true,
-//   },
-//   Titulo: {
-//     type: DataType.STRING,
-//   },
-//   Contenido: {
-//     type: DataType.TEXT,
-//   },
-//   Categoria: {
-//     type: DataType.TEXT,
-//     get() {
-//       return JSON.parse(this?.getDataValue("Categoria"));
-//     },
-//     set(val) {
-//       this?.setDataValue("Categoria", JSON.stringify(val));
-//     },
-//   },
-//   Archivos: {
-//     type: DataType.JSON,
-//   },
-//   Comentarios: {
-//     type: DataType.JSON,
-//   },
-//   Autor: {
-//     type: DataType.STRING,
-//   },
-//   Calificacion: {
-//     type: DataType.INTEGER,
-//   },
-// });

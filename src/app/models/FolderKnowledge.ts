@@ -10,7 +10,6 @@ import {
 } from "sequelize-typescript";
 import { Optional } from "sequelize";
 import Knowledge from "./SuportDocs";
-import { Col } from "@sequelize/core";
 
 type FolderKnowledgeAttributes = {
   id: string;
