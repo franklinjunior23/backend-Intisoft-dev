@@ -1,0 +1,12 @@
+node_modules
+dist
+.env.prod
+.prod.env
+./public/**
+./dist/** 
+
+#Docker Compose
+mysql
+.env
+.env.dev
+.env.development
