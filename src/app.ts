@@ -32,6 +32,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   fileUpload({
+    safeFileNames: true,
     useTempFiles: true,
     tempFileDir: __dirname + "/public/"
   })

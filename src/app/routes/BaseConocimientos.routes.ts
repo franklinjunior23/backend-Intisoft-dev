@@ -50,7 +50,11 @@ BaseConocimientos.put(
   new KnowledgeController().RestaureFolder
 );
 
-BaseConocimientos.put("/article/:id", ValidateUser, upload.array("image"), UpdateById);
+BaseConocimientos.put(
+  "/article/:id",
+  new AuthMiddleware([ROLE.ADMIN, ROLE.SOPORTE]).AddGuard,
+  UpdateById
+);
 
 // delete
 

@@ -42,7 +42,7 @@ class Knowledge extends Model<knowledgeAtributtes, KnowledgeCreation> {
   declare Titulo: string;
 
   @Column({
-    type: DataType.TEXT,
+    type: DataType.TEXT("long"),
   })
   declare Contenido: string;
 
@@ -51,7 +51,6 @@ class Knowledge extends Model<knowledgeAtributtes, KnowledgeCreation> {
     get() {
       return JSON?.parse(this?.getDataValue("Categoria"));
     },
-
   })
   declare Categoria: string;
 

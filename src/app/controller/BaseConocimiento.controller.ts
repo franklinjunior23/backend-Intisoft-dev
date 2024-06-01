@@ -170,48 +170,126 @@ export const CreateBaseConocimiento = async (req: any, res: Response) => {
   }
 };
 export const UpdateById = async (req: any, res: Response) => {
-  const IDDOCSBS = req.params.id;
-  const Data: {
-    Contenido: string;
+  const idArticle = req.params.id;
+
+  type databody = {
     Titulo: string;
-    Categoria: string;
-    Archivos: any[];
-  } = req.body;
-  const files = req.files;
+    Contenido: string;
+    Categoria: string[];
+    Archivos: any[] | undefined;
+    imageAfter: string | any;
+  };
+
+  const Data: databody = req.body;
+  const image = req.files && req.files["image"] ? req.files["image"] : null;
+  console.log(image)
+
+  // conversion JSON string to JSON
+  Data.imageAfter = JSON.parse(Data.imageAfter as string);
+
+  function DetectUpdateImages(
+    DataArticleFiles: any[] | undefined,
+    AfterFIles: string[],
+    setdataUpdate: any[]
+  ) {
+    DataArticleFiles?.forEach((element: any) => {
+      const existsInImageAfter = AfterFIles.some(
+        (element2: any) => element.public_id === element2.public_id
+      );
+
+      if (!existsInImageAfter) {
+        setdataUpdate.push(element.public_id);
+      }
+    });
+  }
 
   try {
-    if (!Data || !Data.Contenido) {
-      return res.json({ update: false, message: "Falta datos" });
+    const article: Knowledge | null = await Knowledge.findByPk(idArticle);
+
+    if (!article)
+      return res
+        .status(404)
+        .json({ update: false, message: "No se encontro el registro" });
+
+    let imagesUpload: any[] | null | unknown | any;
+    let ImagesRemove: string[] = [];
+
+    if (Data.Archivos && Data.imageAfter.length === 0) {
+      ImagesRemove =
+        article.Archivos?.map((element: any) => element.public_id) ?? [];
+
+      if (ImagesRemove) await Cloudinary.deleteImages(ImagesRemove);
+      Data.Archivos = [];
+    } else {
+      DetectUpdateImages(article.Archivos, Data.imageAfter, ImagesRemove);
+      if (ImagesRemove) await Cloudinary.deleteImages(ImagesRemove);
+      Data.Archivos = Data.imageAfter;
     }
 
-    const existingDoc: Knowledge | null = await SuportDocs.findByPk(IDDOCSBS);
+    if (image) {
+      // Verificar si el artículo no tiene archivos asociados
+      if (!article.Archivos || article.Archivos.length === 0) {
 
-    if (files) {
-      Data.Archivos = [...(existingDoc?.Archivos || []), ...(files || [])];
+        // Subir nuevas imágenes
+        imagesUpload = await Cloudinary.uploadImages(image);
+
+        if (!imagesUpload) {
+          return res.json({
+            error: true,
+            message: "Error en la creación de la imagen",
+          });
+        }
+
+        // Mapear las imágenes subidas a la estructura deseada
+        Data.Archivos = imagesUpload.map((file: any) => ({
+          url: file.secure_url,
+          public_id: file.public_id,
+          type: file.format,
+        }));
+
+        imagesUpload = null;
+      } else {
+        // Si el artículo ya tiene archivos asociados
+
+        // Subir nuevas imágenes
+        const updateImagesNew: any = await Cloudinary.uploadImages(image);
+
+        if (!updateImagesNew) {
+          return res.json({
+            error: true,
+            message: "Error en la creación de la imagen",
+          });
+        }
+
+        // Mapear las imágenes subidas a la estructura deseada
+        const newImages = updateImagesNew.map((file: any) => ({
+          url: file.secure_url,
+          public_id: file.public_id,
+          type: file.format,
+        }));
+
+        // Unir los nuevos archivos con los existentes en Data.Archivos
+        const unitedData = [...(Data.imageAfter || []), ...newImages];
+
+        Data.Archivos = unitedData;
+      }
     }
 
-    const updatedDoc: any = await SuportDocs.update(Data, {
-      where: { id: IDDOCSBS },
+    const updatearticle = await article.update({
+      Archivos: Data.Archivos,
+      Titulo: Data.Titulo,
+      Contenido: Data.Contenido,
+      Categoria: Data.Categoria,
     });
 
-    if (!updatedDoc) {
-      throw new Error("Error al actualizar el documento");
-    }
-
-    await CreateNotify(
-      `Se ha actualizado el documento "${existingDoc?.Titulo}" de la base de conocimiento`,
-      req.User?.nombre,
-      req.User?.id
-    );
-
-    return res.json({ update: true, message: "Se actualizó correctamente" });
-  } catch (error) {
-    console.error(`Error al Actualizar Base de Conocimiento: ${error}`);
-    res.status(500).json({
-      update: false,
-      error: true,
-      message: "Hubo un error, intente nuevamente",
+    return res.json({
+      ok: true,
+      message: "Se actualizó correctamente",
+      data: updatearticle,
     });
+  } catch (error: any) {
+    console.log(error?.message);
+    return res.json({ error: true, message: "Error en el servidor" });
   }
 };
 
@@ -243,30 +321,31 @@ export class KnowledgeController {
     };
     const databody: Article = req.body;
     const { folderId } = req.params;
-    const image = req.files["image"];
+    const image = req.files && req.files["image"] ? req.files["image"] : null;
 
     if (!databody || !folderId)
       return res.json({ error: true, message: "Falta datos" });
 
-    const succesuploadFiles: any = await Cloudinary.uploadImages(
-      image
-    );
-
-    if (!succesuploadFiles) {
-      return res.json({
-        ok: false,
-        error: true,
-        message: `Error en la creacion del articulo  ${databody.Titulo}`,
+    if (image) {
+      var succesuploadFiles: any = await Cloudinary.uploadImages(image);
+      if (!succesuploadFiles) {
+        return res.json({
+          ok: false,
+          error: true,
+          message: `Error en la creacion del articulo  ${databody.Titulo}`,
+        });
+      }
+      if(!Array.isArray(succesuploadFiles)){
+        succesuploadFiles = [succesuploadFiles]
+      }
+      var DataFiles = succesuploadFiles?.map((file: any) => {
+        return {
+          url: file.secure_url,
+          public_id: file.public_id,
+          type: file.format,
+        };
       });
     }
-
-    const DataFiles = succesuploadFiles?.map((file:any) => {
-      return {
-        url: file.secure_url,
-        public_id: file.public_id,
-        type: file.format,
-      };
-    });
 
     const folder: FolderKnowledge | null = await FolderKnowledge.findByPk(
       folderId
@@ -280,7 +359,7 @@ export class KnowledgeController {
     const newArticle = await Knowledge.create({
       Autor: req?.user?.datos?.nombre,
       ...databody,
-      Archivos: DataFiles,
+      Archivos: DataFiles ?? null,
       folderId: folder?.id,
     });
 
