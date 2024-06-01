@@ -365,6 +365,7 @@ export class KnowledgeController {
 
     return res.status(201).json({
       ok: true,
+      create:true ,
       data: newArticle,
       message: `Se creo correctamente el articulo "${newArticle.Titulo}" en la carpeta "${folder.name}"`,
     });
