@@ -68,7 +68,9 @@ async function ObtenerNotification({ userId }: { userId: number }) {
     const datos = await Notifications.findAll({
       include: [{ model: Notification_read, where: { User_id: userId } }],
       order: [["createdAt", "DESC"]],
+      limit: 10,
     });
+    
     return datos;
   } catch (error) {
     console.log(`error en utils/SocketIo.ts: ${error}`);
