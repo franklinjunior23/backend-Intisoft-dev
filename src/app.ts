@@ -12,6 +12,8 @@ import { sequelize } from "./app/config/database";
 import { config } from "dotenv";
 import fileUpload from "express-fileupload";
 
+import jwt from "jsonwebtoken";
+
 const app = express();
 
 const env = process.env.NODE_ENV || "development";
@@ -34,7 +36,7 @@ app.use(
   fileUpload({
     safeFileNames: true,
     useTempFiles: true,
-    tempFileDir: __dirname + "/public/"
+    tempFileDir: __dirname + "/public/",
   })
 );
 
@@ -49,10 +51,27 @@ app.use(express.static("public"));
  * */
 app.use(RoutesExpress);
 
+// midleware SocketIO
+io.use(async (socket: any, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) return next(new Error("No token"));
+  else {
+    const decoded: any = await jwt.verify(
+      token,
+      String(process.env.SECRET_KEY_JWT)
+    );
+    console.log(`User conect ${decoded.datos.nombre}`);
+    if (decoded) {
+      socket.userId = decoded?.datos?.id;
+      return next();
+    }
+  }
+  next(new Error("Not token"));
+});
 io.on("connection", handleSocketFunctions);
 server.listen(puerto, async () => {
-  // ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
-  // ExecuteUserCreateDefect();
+  //   ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
+  //  ExecuteUserCreateDefect();
   // await getEmailsToUpdate() // Ejecucion de guardar todos los datos en el campo email de la tabla Users
 
   // force: true
