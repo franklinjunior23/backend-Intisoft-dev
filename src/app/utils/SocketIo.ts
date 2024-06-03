@@ -58,6 +58,7 @@ export async function EmitNotification(socket: MySocket) {
   const datos = await Notifications.findAll({
     include: [{ model: Notification_read, where: { User_id: socket.userId } }],
     order: [["createdAt", "DESC"]],
+    limit: 10,
   });
   socket.emit("datosDesdeServidor", datos);
 }
