@@ -66,7 +66,7 @@ export async function EmitNotification(socket: MySocket) {
 async function ObtenerNotification({ userId }: { userId: number }) {
   try {
     const datos = await Notifications.findAll({
-      include: [{ model: Notification_read, where: { User_id: userId } }],
+      include: [{ model: Notification_read , attributes:['Read'], where: { User_id: userId } }],
       order: [["createdAt", "DESC"]],
       limit: 10,
     });
