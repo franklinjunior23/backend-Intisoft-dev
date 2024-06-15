@@ -14,7 +14,7 @@ export const SignIn = async (req: Request, res: Response) => {
     if (!usuario || !contraseña) {
       return res.json({
         loged: false,
-        message: "Usuario o Contraseña Incorrecto",
+        message: "Credenciales Incorrectas, Verifique los datos ingresados",
       });
     }
 
@@ -28,16 +28,25 @@ export const SignIn = async (req: Request, res: Response) => {
         },
       ],
     });
-    const VerifyPass = await bcrypt.compare(contraseña, buscar?.contraseña);
 
-    if (!buscar || !VerifyPass) {
-      return res.json({ loged: false, message: "Usuario Incorrecto" });
+    if (!buscar) {
+      return res.json({
+        loged: false,
+        message: "Credenciales incorrectas, verifique los datos ingresados",
+      });
     }
+
+    const VerifyPass = await bcrypt.compare(contraseña, buscar.contraseña);
     const user = {
       nombre: buscar.nombre,
       apellido: buscar.apellido,
       rol: buscar.Role.nombre,
     };
+    if (!VerifyPass)
+      return res.json({
+        loged: false,
+        message: "Credenciales incorrectas, verifique los datos ingresados",
+      });
     const token_user = jwt.sign(
       { datos: buscar },
       process.env.SECRET_KEY_JWT || "z2hk1OWGrBln30hwWnX3y"
