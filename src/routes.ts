@@ -14,6 +14,9 @@ import BaseConocimientos from "./app/routes/BaseConocimientos.routes";
 import "dotenv/config";
 import HistoryRoutes from "./app/routes/History.routes";
 import ProfileRoutes from "./app/profile/profile.route";
+import boardRoutes from "./app/v2/board/board.routes";
+import ROLE from "./app/enum/Role";
+import AuthMiddleware from "./app/middleware/Auth.middelware";
 
 const RoutesExpress: Router = Router();
 const point_defect = process.env.POINT || "/api/v1";
@@ -31,6 +34,13 @@ RoutesExpress.use(`${point_defect}/Notifications`, Notifications_Routes);
 RoutesExpress.use(`${point_defect}/Areas`, AreaRoutes);
 RoutesExpress.use(`${point_defect}/history-device`, HistoryRoutes);
 RoutesExpress.use(`${point_defect}/auth`, ProfileRoutes.getRouter());
+
+// route for privated
+RoutesExpress.use(
+  `${point_defect}/board-task`,
+  new AuthMiddleware([ROLE.ADMIN, ROLE.SOPORTE]).AddGuard,
+  boardRoutes.getRouter()
+);
 
 RoutesExpress.use((req, res) => {
   res.status(404).json({

@@ -11,8 +11,8 @@ import RoutesExpress from "./routes";
 import { sequelize } from "./app/config/database";
 import { config } from "dotenv";
 import fileUpload from "express-fileupload";
-
 import jwt from "jsonwebtoken";
+import errorMiddleware from "./app/config/error-server";
 
 const app = express();
 
@@ -69,6 +69,7 @@ io.use(async (socket: any, next) => {
   next(new Error("Not token"));
 });
 io.on("connection", handleSocketFunctions);
+app.use(errorMiddleware);
 server.listen(puerto, async () => {
   //   ExecuteRoles(); // ejecucion de la creacion de los roles por predeterminado
   //  ExecuteUserCreateDefect();
