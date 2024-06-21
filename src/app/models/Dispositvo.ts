@@ -1,4 +1,4 @@
-import { sequelize } from "../config/database";
+import { sequelize } from "../config/db/database";
 import { Model } from "sequelize";
 import { DataType, PrimaryKey } from "sequelize-typescript";
 

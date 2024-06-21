@@ -1,5 +1,5 @@
 import { Ticket } from ".";
-import { sequelize } from "../config/database";
+import { sequelize } from "../config/db/database";
 import Administradores from "./Administradores";
 import Area from "./Area";
 import DetalleDispositivo from "./DetalleComponents";

@@ -1,4 +1,4 @@
-import { sequelize } from "../config/database";
+import { sequelize } from "../config/db/database";
 import { DataType } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
 import { Sucursales, Empresa, Users, Administradores } from "./index";

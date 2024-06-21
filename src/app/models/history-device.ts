@@ -1,4 +1,4 @@
-import { sequelize } from "../config/database";
+import { sequelize } from "../config/db/database";
 import { DataType } from "sequelize-typescript";
 
 const History_device = sequelize.define("HistoryDevice", {

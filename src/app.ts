@@ -8,7 +8,7 @@ import specs from "./docs/Swagger";
 import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import RoutesExpress from "./routes";
-import { sequelize } from "./app/config/database";
+import { sequelize } from "./app/config/db/database";
 import { config } from "dotenv";
 import fileUpload from "express-fileupload";
 import jwt from "jsonwebtoken";
